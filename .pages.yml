@@ -88,6 +88,25 @@ content:
         type: reference
         options: { collection: thematiques, multiple: true, min: 1, max: 2, value: "{path}", label: "{fr.nom}" }
       - { name: date, label: Date de publication, type: date, options: { format: yyyy-MM-dd } }
+      - name: zone
+        label: Zone sur le globe
+        description: Facultatif. Place l'article sur le globe de la page d'accueil.
+        type: select
+        options:
+          placeholder: Aucune
+          values:
+            - { name: europe, label: Europe }
+            - { name: russie-eurasie, label: Russie et Eurasie }
+            - { name: moyen-orient, label: Moyen-Orient }
+            - { name: afrique-nord-sahel, label: Afrique du Nord et Sahel }
+            - { name: afrique-subsaharienne, label: Afrique subsaharienne }
+            - { name: asie-est, label: Asie de l'Est }
+            - { name: asie-sud, label: Asie du Sud }
+            - { name: asie-sud-est, label: Asie du Sud-Est }
+            - { name: oceanie, label: Océanie et Pacifique }
+            - { name: amerique-nord, label: Amérique du Nord }
+            - { name: amerique-latine, label: Amérique latine }
+            - { name: arctique, label: Arctique }
       - name: image
         label: Image de couverture
         description: "Jamais de photo d'agence de presse (AFP, Reuters…) sans licence. Voir le guide du rédacteur pour les banques d'images libres."

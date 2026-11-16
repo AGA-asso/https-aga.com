@@ -1,5 +1,5 @@
 ---
-// Une ligne d'agenda. data-fin et data-limite servent au script de Base.astro.
+// Une carte d'agenda. data-fin, data-limite et data-compte servent au script de Base.astro.
 import { t as traduire } from '../i18n/ui';
 import { lien, type Evenement, type Lang } from '../lib/content';
 import { annee, aUneHeure, heure, jourDuMois, moisCourt } from '../lib/dates';
@@ -25,6 +25,7 @@ const annule = e.etat.statut === 'annule';
     <p class="surtitre">
       <span class:list={['pastille', `pastille-${e.type}`]}>{t(e.type === 'mun' ? 'evt.mun' : 'evt.conference')}</span>
       {annule && <span class="pastille pastille-annule">{t('evt.annule')}</span>}
+      {!passe && !annule && e.debut && <span class="pastille pastille-compte" data-compte={e.debut.getTime()} hidden></span>}
       <Etat etat={e.etat} />
     </p>
     <H class="evenement-titre"><a href={lien(lang, e.chemin)}>{d.titre || '(sans titre)'}</a></H>

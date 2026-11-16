@@ -5,6 +5,7 @@ auteurs:
   - src/content/auteurs/tom-lefevre.yaml
 thematiques:
   - src/content/thematiques/numerique.yaml
+zone: europe
 fr:
   titre: "Cyberattaques : qui accuser, et sur quelle preuve ?"
   chapo: L'attribution d'une attaque informatique est autant une décision politique qu'un constat

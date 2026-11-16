@@ -17,7 +17,7 @@ const r = await getReglages();
       <p class="intro">{t('contact.intro')}</p>
     </header>
     <Formulaire url={r.tally_contact} titre={t('contact.titre')} lang={lang} />
-    <div class="prose">
+    <div class="prose interface">
       {r.email && <p>{t('contact.email')} : <a href={`mailto:${r.email}`}>{r.email}</a></p>}
       <p>
         {r.instagram && <a href={r.instagram} rel="noopener">Instagram</a>}

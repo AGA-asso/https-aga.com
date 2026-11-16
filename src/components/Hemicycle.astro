@@ -1,0 +1,39 @@
+---
+// Délégations d'une session MUN, disposées en hémicycle. Chaque siège porte le numéro
+// de la délégation dans la liste voisine ; survoler l'un allume l'autre.
+interface Props { delegations: string[]; titre: string }
+const { delegations, titre } = Astro.props;
+const n = delegations.length;
+const rangs = n <= 12 ? 1 : n <= 28 ? 2 : 3;
+// Répartition des sièges par rang, proportionnelle au rayon.
+const rayons = Array.from({ length: rangs }, (_, i) => 150 - (rangs - 1 - i) * 34).reverse().reverse();
+const total = rayons.reduce((a, b) => a + b, 0);
+let reste = n;
+const parRang = rayons.map((r, i) => {
+  const k = i === rangs - 1 ? reste : Math.min(reste, Math.round((n * r) / total));
+  reste -= k;
+  return k;
+});
+let numero = 0;
+const sieges = parRang.flatMap((k, i) =>
+  Array.from({ length: k }, (_, j) => {
+    const a = Math.PI - (k === 1 ? Math.PI / 2 : (Math.PI * (j + 0.5)) / k);
+    return { x: 180 + rayons[i] * Math.cos(a), y: 172 - rayons[i] * Math.sin(a), n: ++numero };
+  }),
+);
+const taille = n <= 12 ? 15 : n <= 28 ? 11 : 9;
+---
+
+<div class="hemicycle" data-hemicycle data-reveler>
+  <svg viewBox="0 0 360 190" role="img" aria-label={`${titre} : ${n}`}>
+    {rayons.map((r) => <path class="arc" d={`M${180 - r} 172a${r} ${r} 0 0 1 ${2 * r} 0`}></path>)}
+    <path class="tribune" d="M152 172a28 28 0 0 1 56 0z"></path>
+    {sieges.map((s) => (
+      <g>
+        <circle class="siege" cx={s.x.toFixed(1)} cy={s.y.toFixed(1)} r={taille}></circle>
+        <text x={s.x.toFixed(1)} y={s.y.toFixed(1)}>{String(s.n).padStart(2, '0')}</text>
+      </g>
+    ))}
+  </svg>
+  <ol>{delegations.map((d) => <li>{d}</li>)}</ol>
+</div>

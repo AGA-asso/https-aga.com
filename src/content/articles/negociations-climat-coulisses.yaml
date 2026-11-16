@@ -7,6 +7,7 @@ auteurs:
 thematiques:
   - src/content/thematiques/energie-climat.yaml
   - src/content/thematiques/diplomatie.yaml
+zone: amerique-latine
 fr:
   titre: "Négociations climatiques : ce qui se joue en coulisses"
   chapo: Les séances plénières font les images, les groupes de contact font le texte. Mode d'emploi

@@ -9,6 +9,7 @@ import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { marked } from 'marked';
 import { parisDate, type Lang } from './dates';
+import { ZONES } from './zones';
 
 export type { Lang };
 export const LANGS: Lang[] = ['fr', 'en'];
@@ -28,7 +29,10 @@ const fichiersImages = import.meta.glob<ImageMetadata>('/src/media/**/*.{png,jpg
 export const image = (chemin?: string | null) =>
   rempli(chemin) ? fichiersImages[chemin.startsWith('/') ? chemin : `/${chemin}`] : undefined;
 
-/** Texte riche du CMS (Markdown) vers HTML, images du dépôt comprises. */
+const ancre = (t: string) =>
+  t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/<[^>]+>/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+/** Texte riche du CMS (Markdown) vers HTML, images du dépôt comprises. Les intertitres reçoivent une ancre. */
 export async function html(md?: string | null) {
   if (!rempli(md)) return '';
   let out = await marked.parse(md);
@@ -36,8 +40,12 @@ export async function html(md?: string | null) {
     const meta = image(src);
     if (meta) out = out.replaceAll(`src="${src}"`, `src="${(await getImage({ src: meta, width: 1200 })).src}" loading="lazy"`);
   }
-  return out;
+  return out.replace(/<h2>(.*?)<\/h2>/g, (_, t) => `<h2 id="${ancre(t)}">${t}</h2>`);
 }
+
+/** Sommaire d'un texte : ses intertitres de premier niveau. */
+export const sommaire = (contenu: string) =>
+  [...contenu.matchAll(/<h2 id="([^"]+)">(.*?)<\/h2>/g)].map(([, id, titre]) => ({ id, titre: titre.replace(/<[^>]+>/g, '') }));
 
 export const minutesDeLecture = (md?: string | null) =>
   Math.max(1, Math.round((md ?? '').split(/\s+/).filter(Boolean).length / 220));
@@ -93,6 +101,8 @@ export type Article = CollectionEntry<'articles'> & {
   auteurs: { nom: string; promotion?: string | null }[];
   themes: CollectionEntry<'thematiques'>[];
   couverture?: ImageMetadata;
+  /** Zone du globe, si elle est renseignée et connue. */
+  zone?: { id: string; fr: string; en: string; lat: number; lon: number };
 };
 
 export async function getArticles({ tous = APERCU } = {}): Promise<Article[]> {
@@ -124,6 +134,7 @@ export async function getArticles({ tous = APERCU } = {}): Promise<Article[]> {
         auteurs: sign.map((x) => ({ nom: x!.data.nom!, promotion: x!.data.promotion })),
         themes: th as CollectionEntry<'thematiques'>[],
         couverture,
+        zone: d.zone && ZONES[d.zone] ? { id: d.zone, ...ZONES[d.zone] } : undefined,
       };
     })
     .filter((a) => tous || a.etat.enLigne)

@@ -14,7 +14,7 @@ const r = await getReglages();
 <Base lang={lang} titre={page.titre || t('nav.rejoindre')}>
   <div class="conteneur etroit">
     <header class="tete-page"><h1>{page.titre || t('nav.rejoindre')}</h1></header>
-    <div class="prose" set:html={page.texte} />
+    <div class="prose interface" set:html={page.texte} />
     <Formulaire url={r.tally_recrutement} titre={t('nav.rejoindre')} lang={lang} />
   </div>
 </Base>

@@ -15,7 +15,7 @@ const mail = r.email || '[e-mail]';
   <div class="conteneur etroit">
     <header class="tete-page"><h1>{t('pied.confidentialite')}</h1></header>
     {fr ? (
-      <div class="prose">
+      <div class="prose interface">
         <p>Ce site ne dépose aucun cookie et ne vous demande aucun compte. Voici les seuls cas où des données vous concernant sont traitées.</p>
         <h2>Lettre d'information</h2>
         <p>Votre adresse e-mail est collectée avec votre accord, confirmé par un e-mail de validation. Elle est conservée par notre prestataire Brevo (France) jusqu'à votre désinscription, possible depuis chaque envoi.</p>
@@ -31,7 +31,7 @@ const mail = r.email || '[e-mail]';
         <p>Vous pouvez demander l'accès à vos données, leur rectification ou leur suppression en écrivant à <a href={`mailto:${mail}`}>{mail}</a>. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>
       </div>
     ) : (
-      <div class="prose">
+      <div class="prose interface">
         <p>This site sets no cookies and requires no account. These are the only cases in which data about you is processed.</p>
         <h2>Newsletter</h2>
         <p>Your email address is collected with your consent, confirmed by a validation email. It is stored by our provider Brevo (France) until you unsubscribe, which you can do from any email.</p>

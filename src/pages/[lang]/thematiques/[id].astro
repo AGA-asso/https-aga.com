@@ -33,8 +33,8 @@ const d = theme.data[lang]!;
       ))}
     </ul>
     {articles.length === 0 && <p class="vide">{t('articles.aucun')}</p>}
-    <div class="grille-articles">
-      {articles.map((a) => <CarteArticle article={a} lang={lang} niveau="h2" />)}
+    <div class="grille-articles vedette">
+      {articles.map((a, i) => <CarteArticle article={a} lang={lang} niveau="h2" i={i} large={i === 0} />)}
     </div>
   </div>
 </Base>

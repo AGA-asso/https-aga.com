@@ -26,8 +26,8 @@ const themes = await getThematiques();
       {themes.map((th) => <li><a href={lien(lang, `thematiques/${th.id}`)}>{th.data[lang]?.nom}</a></li>)}
     </ul>
     {page.data.length === 0 && <p class="vide">{t('articles.aucun')}</p>}
-    <div class="grille-articles">
-      {page.data.map((a) => <CarteArticle article={a} lang={lang} niveau="h2" />)}
+    <div class="grille-articles vedette">
+      {page.data.map((a, i) => <CarteArticle article={a} lang={lang} niveau="h2" i={i} large={i === 0} />)}
     </div>
     {
       (page.url.prev || page.url.next) && (

@@ -6,6 +6,7 @@ auteurs:
 thematiques:
   - src/content/thematiques/numerique.yaml
   - src/content/thematiques/economie.yaml
+zone: asie-est
 fr:
   titre: "Semi-conducteurs : la souveraineté a-t-elle un prix ?"
   chapo: Relocaliser la production de puces est devenu un objectif politique. Encore faut-il savoir

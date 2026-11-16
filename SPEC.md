@@ -121,6 +121,7 @@ Dans les tableaux ci-dessous, « FR+EN » désigne un champ en double.
 | Auteur(s) | référence vers Auteurs, 1 à 3 | requis |
 | Thématique(s) | référence vers Thématiques, 1 à 2 | requis |
 | Date de publication | date | requise ; une date future ne retarde pas la mise en ligne |
+| Zone sur le globe | liste fermée de 12 zones | facultative ; place l'article sur le globe de la page d'accueil |
 | Image de couverture | image | requise |
 | Texte alternatif | texte, FR+EN | requis |
 | Crédit | texte | requis (auteur ou organisme) |
@@ -347,6 +348,20 @@ Pour le futur développeur : un `README` qui explique la structure, les commande
 La v1 est terminée quand les 25 points sont réussis.
 
 ## 14. État au 16 novembre 2026
+
+### Refonte visuelle
+
+À la demande du porteur du projet, l'interface a été refaite après la première preview :
+
+- ouverture de l'accueil avec un globe interactif (glisser pour tourner) où sont situés les derniers articles ;
+- transitions entre pages sans rechargement, apparitions au défilement, compteurs animés ;
+- mode sombre, automatique selon le système et réglable par un bouton (choix mémorisé dans le navigateur, sans cookie) ;
+- frise de l'année universitaire sur l'agenda, avec repère « aujourd'hui » et compte à rebours sur chaque événement ;
+- hémicycle des délégations sur les fiches MUN ;
+- page article avec barre de progression, sommaire, lettrine et boutons de partage ;
+- menu plein écran sur mobile.
+
+Toutes les animations sont coupées pour les visiteurs qui ont demandé la réduction des mouvements, et le site reste lisible sans JavaScript. Les couleurs et typographies restent provisoires, en attendant la charte.
 
 ### Vérifié sur les documentations officielles
 

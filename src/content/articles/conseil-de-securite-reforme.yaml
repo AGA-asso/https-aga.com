@@ -5,6 +5,7 @@ auteurs:
   - src/content/auteurs/lea-martin.yaml
 thematiques:
   - src/content/thematiques/diplomatie.yaml
+zone: amerique-nord
 fr:
   titre: "Réformer le Conseil de sécurité : pourquoi rien ne bouge"
   chapo: Tout le monde s'accorde sur le diagnostic, personne sur le remède. Anatomie d'un blocage

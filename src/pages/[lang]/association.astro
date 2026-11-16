@@ -17,11 +17,11 @@ const fonction = (m: any) => m[`fonction_${lang}`];
 <Base lang={lang} titre={page.titre || t('nav.association')}>
   <div class="conteneur">
     <header class="tete-page"><h1>{page.titre || t('nav.association')}</h1></header>
-    <div class="prose intro-page" set:html={page.texte} />
+    <div class="prose interface intro-page" set:html={page.texte} />
 
     {enCours && (
       <section class="bloc">
-        <h2 class="titre-section">{t('asso.bureau')} {enCours.data.annee}</h2>
+        <h2 class="titre-section seul">{t('asso.bureau')} {enCours.data.annee}</h2>
         <ul class="bureau">
           {enCours.data.membres.map((m) => {
             const photo = image(m.photo);
@@ -43,7 +43,7 @@ const fonction = (m: any) => m[`fonction_${lang}`];
 
     {anciens.length > 0 && (
       <section class="bloc">
-        <h2 class="titre-section">{t('asso.anciens')}</h2>
+        <h2 class="titre-section seul">{t('asso.anciens')}</h2>
         {anciens.map((m) => (
           <details class="ancien-bureau">
             <summary>{m.data.annee}</summary>

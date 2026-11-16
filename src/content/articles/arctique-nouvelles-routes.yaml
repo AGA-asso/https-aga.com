@@ -6,6 +6,7 @@ auteurs:
 thematiques:
   - src/content/thematiques/securite.yaml
   - src/content/thematiques/energie-climat.yaml
+zone: arctique
 fr:
   titre: "Arctique : des routes nouvelles, des règles anciennes"
   chapo: Le recul des glaces ouvre des passages que le droit de la mer n'avait pas vraiment prévus.

@@ -3,17 +3,19 @@ import { Image } from 'astro:assets';
 import { lien, type Article, type Lang } from '../lib/content';
 import { jourLong } from '../lib/dates';
 import Etat from './Etat.astro';
-interface Props { article: Article; lang: Lang; niveau?: 'h2' | 'h3' }
-const { article: a, lang, niveau: H = 'h3' } = Astro.props;
+interface Props { article: Article; lang: Lang; niveau?: 'h2' | 'h3'; i?: number; large?: boolean }
+const { article: a, lang, niveau: H = 'h3', i = 0, large = false } = Astro.props;
 const d = a.data[lang] ?? {};
 ---
 
-<article class="carte-article">
-  {
-    a.couverture && (
-      <Image class="carte-image" src={a.couverture} alt="" width={640} height={400} loading="lazy" />
-    )
-  }
+<article class="carte-article" data-reveler style={`--i:${i % 3}`}>
+  <div class="carte-visuel">
+    {
+      a.couverture && (
+        <Image class="carte-image" src={a.couverture} alt="" width={large ? 1200 : 720} height={large ? 600 : 450} loading="lazy" transition:name={`couv-${a.id}`} />
+      )
+    }
+  </div>
   <p class="surtitre">
     {a.themes[0]?.data[lang]?.nom}
     <Etat etat={a.etat} />

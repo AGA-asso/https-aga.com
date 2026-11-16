@@ -1,9 +1,9 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import CarteArticle from '../../components/CarteArticle.astro';
 import CarteEvenement from '../../components/CarteEvenement.astro';
 import Etat from '../../components/Etat.astro';
+import Globe from '../../components/Globe.astro';
 import { t as traduire } from '../../i18n/ui';
 import { LANGS, getArticles, getEvenements, lien, partager, type Lang } from '../../lib/content';
 import { jourLong } from '../../lib/dates';
@@ -13,56 +13,104 @@ const lang = Astro.params.lang as Lang;
 const t = traduire(lang);
 const articles = await getArticles();
 const une = articles.find((a) => a.data.a_la_une) ?? articles[0];
-const suivants = articles.filter((a) => a !== une).slice(0, 6);
+const suivants = articles.filter((a) => a !== une).slice(0, 4);
+const evenements = await getEvenements();
 // Les événements annulés restent dans l'agenda mais ne sont pas mis en avant sur l'accueil.
-const { aVenir } = partager((await getEvenements()).filter((e) => e.etat.statut !== 'annule'));
+const { aVenir } = partager(evenements.filter((e) => e.etat.statut !== 'annule'));
+// Articles situés sur le globe : la une d'abord, puis les plus récents.
+const situes = [une, ...articles.filter((a) => a !== une)].filter((a) => a?.zone).slice(0, 4);
+const points = situes.map((a) => ({ id: a.id, lat: a.zone!.lat, lon: a.zone!.lon, zone: a.zone![lang], titre: a.data[lang]?.titre ?? '', url: lien(lang, `articles/${a.id}`) }));
+const nb = (type: string) => evenements.filter((e) => e.type === type && e.etat.statut !== 'annule').length;
 ---
 
 <Base lang={lang}>
-  <div class="conteneur">
-    <p class="baseline">{t('baseline')}</p>
+  <section class="ouverture nuit">
+    <div class="conteneur ouverture-grille">
+      <div class="ouverture-texte">
+        {
+          une ? (
+            <>
+              <p class="surtitre" style="--i:0">{t('accueil.une')} · {une.themes[0]?.data[lang]?.nom} <Etat etat={une.etat} /></p>
+              <h1 style="--i:1"><a href={lien(lang, `articles/${une.id}`)}>{une.data[lang]?.titre}</a></h1>
+              <p class="ouverture-chapo" style="--i:2">{une.data[lang]?.chapo}</p>
+              <p class="meta mono" style="--i:3">
+                {une.auteurs.map((x) => x.nom).join(', ')}
+                {une.date && <> · <time datetime={une.date.toISOString()}>{jourLong(une.date, lang)}</time></>}
+              </p>
+              <div class="ouverture-actions" style="--i:4">
+                <a class="bouton" href={lien(lang, `articles/${une.id}`)}>{t('accueil.lire')} <span aria-hidden="true">→</span></a>
+                <a class="lien-fleche" href={lien(lang, 'articles')}>{t('accueil.tous')}</a>
+              </div>
+            </>
+          ) : (
+            <h1>{t('baseline')}</h1>
+          )
+        }
+      </div>
+      <Globe points={points} />
+    </div>
     {
-      une && (
-        <article class="une">
-          {une.couverture && (
-            <a href={lien(lang, `articles/${une.id}`)} tabindex="-1" aria-hidden="true">
-              <Image class="une-image" src={une.couverture} alt="" width={1200} height={750} loading="eager" />
-            </a>
-          )}
-          <div class="une-texte">
-            <p class="surtitre">{une.themes[0]?.data[lang]?.nom} <Etat etat={une.etat} /></p>
-            <h1 class="une-titre"><a href={lien(lang, `articles/${une.id}`)}>{une.data[lang]?.titre}</a></h1>
-            <p class="une-chapo">{une.data[lang]?.chapo}</p>
-            <p class="meta">
-              {une.auteurs.map((x) => x.nom).join(', ')}
-              {une.date && <> · <time datetime={une.date.toISOString()}>{jourLong(une.date, lang)}</time></>}
-            </p>
-          </div>
-        </article>
+      situes.length > 1 && (
+        <nav class="points-chauds" aria-label={t('accueil.carte')}>
+          <ol class="conteneur">
+            {situes.map((a) => (
+              <li>
+                <a href={lien(lang, `articles/${a.id}`)} data-point-chaud={a.id}>
+                  <span class="mono">{a.zone![lang]}</span>
+                  <strong>{a.data[lang]?.titre}</strong>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
       )
     }
+  </section>
 
-    <div class="accueil-grille">
-      <section aria-labelledby="derniers">
-        <div class="titre-ligne">
-          <h2 class="titre-section" id="derniers">{t('accueil.derniers')}</h2>
-          <a class="lien-fleche" href={lien(lang, 'articles')}>{t('accueil.tous')}</a>
-        </div>
-        <div class="grille-articles deux">
-          {suivants.map((a) => <CarteArticle article={a} lang={lang} />)}
-        </div>
-      </section>
+  <div class="conteneur">
+    <section class="bloc" aria-labelledby="derniers">
+      <div class="titre-ligne">
+        <h2 class="titre-section" id="derniers">{t('accueil.derniers')}</h2>
+        <a class="lien-fleche" href={lien(lang, 'articles')}>{t('accueil.tous')}</a>
+      </div>
+      <div class="grille-articles duo">
+        {suivants.map((a, i) => <CarteArticle article={a} lang={lang} i={i} large={i === 0} />)}
+      </div>
+    </section>
 
-      <aside aria-labelledby="rdv" data-agenda>
-        <div class="titre-ligne">
-          <h2 class="titre-section" id="rdv">{t('accueil.agenda')}</h2>
-          <a class="lien-fleche" href={lien(lang, 'agenda')}>{t('accueil.agendaTout')}</a>
-        </div>
-        <ul class="evenements compact" data-evenements="a-venir" hidden={aVenir.length === 0}>
-          {aVenir.slice(0, 4).map((e) => <CarteEvenement evenement={e} lang={lang} />)}
-        </ul>
-        <p class="vide" data-vide hidden={aVenir.length > 0}>{t('evt.aucunAVenir')}</p>
-      </aside>
-    </div>
+    <section class="bloc" aria-labelledby="rdv" data-agenda>
+      <div class="titre-ligne">
+        <h2 class="titre-section" id="rdv">{t('accueil.agenda')}</h2>
+        <a class="lien-fleche" href={lien(lang, 'agenda')}>{t('accueil.agendaTout')}</a>
+      </div>
+      <ul class="evenements" data-evenements="a-venir" hidden={aVenir.length === 0}>
+        {aVenir.slice(0, 3).map((e) => <CarteEvenement evenement={e} lang={lang} />)}
+      </ul>
+      <p class="vide" data-vide hidden={aVenir.length > 0}>{t('evt.aucunAVenir')}</p>
+    </section>
+
+    <section class="bloc" aria-labelledby="activites">
+      <h2 class="grand-titre" id="activites" data-reveler>{t('accueil.activites')}</h2>
+      <div class="activites" data-reveler>
+        <a class="activite" href={lien(lang, 'articles')}>
+          <span class="activite-chiffre" data-compteur={articles.length}>{articles.length}</span>
+          <span class="mono">{t('accueil.nbArticles')}</span>
+          <h3>{t('accueil.ecrire')}</h3>
+          <p>{t('accueil.ecrireTexte')}</p>
+        </a>
+        <a class="activite" href={lien(lang, 'conferences')}>
+          <span class="activite-chiffre" data-compteur={nb('conference')}>{nb('conference')}</span>
+          <span class="mono">{t('accueil.nbConferences')}</span>
+          <h3>{t('accueil.ecouter')}</h3>
+          <p>{t('accueil.ecouterTexte')}</p>
+        </a>
+        <a class="activite" href={lien(lang, 'mun')}>
+          <span class="activite-chiffre" data-compteur={nb('mun')}>{nb('mun')}</span>
+          <span class="mono">{t('accueil.nbSessions')}</span>
+          <h3>{t('accueil.simuler')}</h3>
+          <p>{t('accueil.simulerTexte')}</p>
+        </a>
+      </div>
+    </section>
   </div>
 </Base>

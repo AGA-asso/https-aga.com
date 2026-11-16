@@ -16,7 +16,7 @@ const sessions = await getEvenements({ type: 'mun' });
     <header class="tete-page">
       <h1>{page.titre || t('mun.titre')}</h1>
     </header>
-    <div class="prose intro-page" set:html={page.texte} />
+    <div class="prose interface intro-page" style="margin-bottom:3.5rem" set:html={page.texte} />
     <Agenda evenements={sessions} lang={lang} titreAVenir="mun.sessions" titrePasses="mun.archive" />
   </div>
 </Base>

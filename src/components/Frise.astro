@@ -1,0 +1,36 @@
+---
+// Frise de l'année universitaire : un point par événement, placé à sa date.
+// Le repère « aujourd'hui » est positionné dans le navigateur (script de Base.astro).
+import { t as traduire } from '../i18n/ui';
+import { lien, type Evenement, type Lang } from '../lib/content';
+import { jourLong, moisCourt, parisDate } from '../lib/dates';
+interface Props { evenements: Evenement[]; lang: Lang }
+const { evenements, lang } = Astro.props;
+const t = traduire(lang);
+// Année universitaire en cours : de septembre à juillet.
+const now = new Date();
+const an = now.getUTCMonth() >= 7 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
+const debut = parisDate(`${an}-09-01`)!.getTime();
+const fin = parisDate(`${an + 1}-07-01`)!.getTime();
+const pos = (d: Date | number) => (((+d - debut) / (fin - debut)) * 100).toFixed(2);
+const mois = Array.from({ length: 10 }, (_, i) => parisDate(`${an + (i > 3 ? 1 : 0)}-${String(((8 + i) % 12) + 1).padStart(2, '0')}-01`)!);
+const points = evenements.filter((e) => e.debut && +e.debut >= debut && +e.debut < fin && e.etat.statut !== 'annule');
+---
+
+{points.length > 0 && (
+  <div class="frise" data-frise data-debut={debut} data-fin={fin} data-reveler>
+    <div class="frise-axe">
+      {mois.map((m) => <span class="frise-mois mono" style={`left:${pos(m)}%`}>{moisCourt(m, lang)}</span>)}
+      <span class="frise-aujourdhui" data-aujourdhui hidden><b class="mono">{t('frise.aujourdhui')}</b></span>
+      {points.map((e) => (
+        <a class:list={['frise-point', e.type]} href={lien(lang, e.chemin)} style={`left:${pos(e.debut!)}%`} data-quand={e.fin?.getTime()} aria-label={`${e.data[lang]?.titre}, ${jourLong(e.debut!, lang)}`}>
+          <span aria-hidden="true">{jourLong(e.debut!, lang)}<br /><b>{e.data[lang]?.titre}</b></span>
+        </a>
+      ))}
+    </div>
+    <p class="frise-legende mono">
+      <span><i style="--c:var(--mun)"></i>{t('evt.mun')}</span>
+      <span><i style="--c:var(--conf)"></i>{t('evt.conference')}</span>
+    </p>
+  </div>
+)}

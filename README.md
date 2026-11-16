@@ -20,6 +20,7 @@ Le reste de ce fichier s'adresse à la personne qui modifie le code.
 | `src/lib/content.ts` | Lecture des contenus et **règle de publication**. |
 | `src/i18n/ui.ts` | Textes d'interface dans les deux langues. |
 | `src/pages/[lang]/` | Les pages, générées pour `/fr/` et `/en/`. |
+| `src/components/Globe.astro`, `src/lib/zones.ts` | Le globe de l'accueil et la liste des zones proposées dans le CMS. |
 | `src/styles/global.css` | Tout le style ; couleurs et typographies en variables en tête de fichier. |
 
 Règle de publication : un contenu n'est en ligne que s'il est au statut « Publié » et complet

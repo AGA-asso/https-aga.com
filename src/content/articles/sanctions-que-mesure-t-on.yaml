@@ -5,6 +5,7 @@ auteurs:
   - src/content/auteurs/samir-benali.yaml
 thematiques:
   - src/content/thematiques/economie.yaml
+zone: russie-eurasie
 fr:
   titre: "Sanctions économiques : que mesure-t-on vraiment ?"
   chapo: Juger une sanction à l'aune du changement de régime, c'est se condamner à la trouver

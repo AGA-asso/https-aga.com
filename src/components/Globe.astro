@@ -1,0 +1,193 @@
+---
+// Globe interactif de la page d'accueil. Il est décoratif pour les lecteurs d'écran :
+// les mêmes articles sont listés en liens juste en dessous (« points chauds »).
+// Les points de terre viennent de src/data/terres.json (voir scripts/generer-globe.mjs).
+interface Props {
+  points: { id: string; lat: number; lon: number; zone: string; titre: string; url: string }[];
+}
+const { points } = Astro.props;
+---
+
+<div class="globe" data-globe data-points={JSON.stringify(points)} aria-hidden="true">
+  <canvas></canvas>
+  <div class="globe-bulle" data-bulle><span class="mono"></span><strong></strong></div>
+  <span class="globe-coord mono" data-coord></span>
+</div>
+
+<script>
+  import terres from '../data/terres.json';
+
+  const RAD = Math.PI / 180;
+  // Pré-calcul : pour chaque point de terre, longitude, sin et cos de la latitude.
+  const N = terres.length / 2;
+  const LON = new Float32Array(N), SIN = new Float32Array(N), COS = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    LON[i] = (terres[2 * i] / 10) * RAD;
+    SIN[i] = Math.sin((terres[2 * i + 1] / 10) * RAD);
+    COS[i] = Math.cos((terres[2 * i + 1] / 10) * RAD);
+  }
+
+  function monter(el: HTMLElement) {
+    const canvas = el.querySelector('canvas')!;
+    const ctx = canvas.getContext('2d')!;
+    const bulle = el.querySelector<HTMLElement>('[data-bulle]')!;
+    const coord = el.querySelector<HTMLElement>('[data-coord]')!;
+    const points: { id: string; lat: number; lon: number; zone: string; titre: string; url: string }[] = JSON.parse(el.dataset.points || '[]');
+    const calme = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let L = 0, H = 0, dpr = 1;
+    // Rotation courante et rotation visée (en radians)
+    let lon0 = (points[0]?.lon ?? 10) * RAD, lat0 = 18 * RAD;
+    let cibleLon = lon0, cibleLat = lat0;
+    let actif = points.length ? 0 : -1;
+    let glisse: { x: number; y: number; lon: number; lat: number; bouge: boolean } | null = null;
+    let reprise = 0; // moment où la rotation automatique reprend
+    let dernierCycle = performance.now();
+    let visible = true;
+    let couleurs = lire();
+
+    function lire() {
+      const s = getComputedStyle(el);
+      return { terre: '#cfe0ff', accent: s.getPropertyValue('--accent').trim(), filet: s.getPropertyValue('--discret').trim() };
+    }
+    function taille() {
+      const r = el.getBoundingClientRect();
+      dpr = Math.min(2, devicePixelRatio || 1);
+      L = r.width; H = r.height;
+      canvas.width = Math.round(L * dpr); canvas.height = Math.round(H * dpr);
+    }
+    /** Projection orthographique : renvoie [x, y, profondeur] ; profondeur < 0 = face cachée. */
+    function projeter(lon: number, sinLat: number, cosLat: number, R: number): [number, number, number] {
+      const d = lon - lon0, cd = Math.cos(d);
+      const s0 = Math.sin(lat0), c0 = Math.cos(lat0);
+      return [L / 2 + R * cosLat * Math.sin(d), H / 2 - R * (c0 * sinLat - s0 * cosLat * cd), s0 * sinLat + c0 * cosLat * cd];
+    }
+    function viser(i: number) {
+      actif = i;
+      const p = points[i];
+      if (!p) return;
+      cibleLon = p.lon * RAD;
+      cibleLat = Math.max(-0.5, Math.min(0.6, p.lat * RAD * 0.55));
+      document.querySelectorAll<HTMLElement>('[data-point-chaud]').forEach((a) => a.classList.toggle('actif', a.dataset.pointChaud === p.id));
+    }
+
+    function dessiner(t: number) {
+      if (!canvas.isConnected) return; // la page a changé : on arrête
+      requestAnimationFrame(dessiner);
+      if (!visible) return;
+      const R = Math.min(L, H) * 0.42;
+
+      // Mouvement : suivi de la cible, puis lente dérive
+      if (!glisse) {
+        if (t > reprise && points.length > 1 && !calme && t - dernierCycle > 5200) { dernierCycle = t; viser((actif + 1) % points.length); }
+        let d = cibleLon - lon0;
+        d = ((d + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI; // chemin le plus court
+        lon0 += d * 0.045; lat0 += (cibleLat - lat0) * 0.045;
+        if (!calme && !points.length) cibleLon += 0.0025;
+      }
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, L, H);
+
+      // Halo et disque
+      const halo = ctx.createRadialGradient(L / 2, H / 2, R * 0.86, L / 2, H / 2, R * 1.18);
+      halo.addColorStop(0, 'rgba(255,255,255,0)'); halo.addColorStop(0.42, 'rgba(120,170,255,0.10)'); halo.addColorStop(1, 'rgba(120,170,255,0)');
+      ctx.fillStyle = halo; ctx.fillRect(0, 0, L, H);
+      const disque = ctx.createRadialGradient(L / 2 - R * 0.35, H / 2 - R * 0.4, R * 0.1, L / 2, H / 2, R);
+      disque.addColorStop(0, 'rgba(140,170,230,0.10)'); disque.addColorStop(1, 'rgba(140,170,230,0.015)');
+      ctx.beginPath(); ctx.arc(L / 2, H / 2, R, 0, 7); ctx.fillStyle = disque; ctx.fill();
+      ctx.strokeStyle = couleurs.filet; ctx.globalAlpha = 0.35; ctx.lineWidth = 1; ctx.stroke(); ctx.globalAlpha = 1;
+
+      // Terres : un petit point par position, plus net au centre
+      ctx.fillStyle = couleurs.terre;
+      const base = Math.max(1.4, R / 120);
+      for (let i = 0; i < N; i++) {
+        const [x, y, z] = projeter(LON[i], SIN[i], COS[i], R);
+        if (z <= 0.02) continue;
+        ctx.globalAlpha = 0.3 + 0.7 * z;
+        const c = base * (0.5 + 0.5 * z);
+        ctx.beginPath(); ctx.arc(x, y, c / 2, 0, 7); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // Points des articles
+      let ancre: [number, number] | null = null;
+      points.forEach((p, i) => {
+        const [x, y, z] = projeter(p.lon * RAD, Math.sin(p.lat * RAD), Math.cos(p.lat * RAD), R);
+        (p as any)._e = z > 0.05 ? [x, y] : null;
+        if (z <= 0.05) return;
+        const estActif = i === actif;
+        if (estActif) {
+          ancre = [x, y];
+          const phase = calme ? 0.5 : (t / 1600) % 1;
+          ctx.beginPath(); ctx.arc(x, y, 6 + phase * 22, 0, 7);
+          ctx.strokeStyle = couleurs.accent; ctx.globalAlpha = (1 - phase) * 0.8; ctx.lineWidth = 1.5; ctx.stroke(); ctx.globalAlpha = 1;
+        }
+        ctx.beginPath(); ctx.arc(x, y, estActif ? 5.5 : 3.5, 0, 7); ctx.fillStyle = couleurs.accent; ctx.globalAlpha = estActif ? 1 : 0.75 * z + 0.2; ctx.fill(); ctx.globalAlpha = 1;
+      });
+
+      // Bulle de l'article visé
+      const p = points[actif];
+      if (p && ancre) {
+        bulle.style.transform = `translate(calc(${ancre[0]}px - 50%), calc(${ancre[1]}px - 100% - 16px))`;
+        if (bulle.dataset.id !== p.id) {
+          bulle.dataset.id = p.id;
+          bulle.querySelector('.mono')!.textContent = p.zone;
+          bulle.querySelector('strong')!.textContent = p.titre;
+        }
+        bulle.classList.add('visible');
+      } else bulle.classList.remove('visible');
+
+      const la = (lat0 / RAD), lo = ((lon0 / RAD + 540) % 360) - 180;
+      coord.textContent = `${Math.abs(la).toFixed(1)}° ${la >= 0 ? 'N' : 'S'}  ${Math.abs(lo).toFixed(1)}° ${lo >= 0 ? 'E' : 'O'}`;
+    }
+
+    // Glisser pour faire tourner ; un clic sur un point ouvre l'article
+    const proche = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      const [x, y] = [e.clientX - r.left, e.clientY - r.top];
+      return points.findIndex((p) => (p as any)._e && Math.hypot((p as any)._e[0] - x, (p as any)._e[1] - y) < 18);
+    };
+    canvas.addEventListener('pointerdown', (e) => {
+      glisse = { x: e.clientX, y: e.clientY, lon: lon0, lat: lat0, bouge: false };
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!glisse) {
+        const i = proche(e);
+        canvas.style.cursor = i >= 0 ? 'pointer' : '';
+        if (i >= 0 && i !== actif) { viser(i); reprise = performance.now() + 6000; }
+        return;
+      }
+      const dx = e.clientX - glisse.x, dy = e.clientY - glisse.y;
+      if (Math.abs(dx) + Math.abs(dy) > 4) glisse.bouge = true;
+      const k = 1 / (Math.min(L, H) * 0.42);
+      lon0 = glisse.lon - dx * k; lat0 = Math.max(-1.2, Math.min(1.2, glisse.lat + dy * k));
+      cibleLon = lon0; cibleLat = lat0;
+    });
+    const lacher = (e: PointerEvent) => {
+      if (!glisse) return;
+      const bouge = glisse.bouge; glisse = null;
+      reprise = performance.now() + 7000; dernierCycle = reprise;
+      if (!bouge) { const i = proche(e); if (i >= 0) (document.querySelector<HTMLAnchorElement>(`[data-point-chaud="${points[i].id}"]`))?.click(); }
+    };
+    canvas.addEventListener('pointerup', lacher);
+    canvas.addEventListener('pointercancel', () => (glisse = null));
+
+    // La liste sous le globe pilote aussi la rotation
+    document.querySelectorAll<HTMLElement>('[data-point-chaud]').forEach((a) => {
+      const viserCeLien = () => { const i = points.findIndex((p) => p.id === a.dataset.pointChaud); if (i >= 0) { viser(i); reprise = performance.now() + 6000; dernierCycle = reprise; } };
+      a.addEventListener('pointerenter', viserCeLien);
+      a.addEventListener('focus', viserCeLien);
+    });
+
+    new ResizeObserver(taille).observe(el);
+    new IntersectionObserver((es) => (visible = es[0].isIntersecting)).observe(el);
+    document.addEventListener('theme', () => (couleurs = lire()));
+    taille();
+    if (points.length) viser(0);
+    requestAnimationFrame(dessiner);
+  }
+
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('[data-globe]').forEach(monter));
+</script>

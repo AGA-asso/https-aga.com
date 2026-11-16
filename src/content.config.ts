@@ -31,6 +31,7 @@ const articles = defineCollection({
     date,
     auteurs: liste(z.string()),
     thematiques: liste(z.string()),
+    zone: texte,
     fr: langue({ titre: texte, chapo: texte, corps: texte }),
     en: langue({ titre: texte, chapo: texte, corps: texte }),
     image,

@@ -6,6 +6,7 @@ import { t as traduire, valeur } from '../i18n/ui';
 import { APERCU, html, image, lien, type Evenement, type Lang } from '../lib/content';
 import { aUneHeure, heure, jourComplet, jourLong } from '../lib/dates';
 import Etat from './Etat.astro';
+import Hemicycle from './Hemicycle.astro';
 interface Props { evenement: Evenement; lang: Lang }
 const { evenement: e, lang } = Astro.props;
 const t = traduire(lang);
@@ -18,112 +19,105 @@ const presentation = await html(d.presentation);
 const compteRendu = e.compteRenduComplet ? await html(d.compte_rendu) : '';
 const L = (o: any, k: string) => o?.[`${k}_${lang}`];
 const photos = (x.photos ?? []).map((p: any) => ({ ...p, meta: image(p.fichier) })).filter((p: any) => p.meta);
-const delegations = (x.delegations ?? []).map((p: any) => p[lang]).filter(Boolean);
+const delegations: string[] = (x.delegations ?? []).map((p: any) => p[lang]).filter(Boolean);
 const documents = (x.documents ?? []).filter((p: any) => p.fichier);
 const distinctions = (x.distinctions ?? []).filter((p: any) => p.nom);
 ---
 
-<article class="conteneur fiche" data-fiche data-fin={e.fin?.getTime()}>
-  <header class="tete-page">
-    <p class="surtitre">
-      <a href={lien(lang, mun ? 'mun' : 'conferences')}>{t(mun ? 'evt.mun' : 'evt.conference')}</a>
-      {annule && <span class="pastille pastille-annule">{t('evt.annule')}</span>}
-      <Etat etat={e.etat} />
-    </p>
-    <h1>{d.titre || '(sans titre)'}</h1>
-    {
-      APERCU && (e.etat.blocages.length > 0 || e.etat.avertissements.length > 0) && (
-        <div class="blocages">
-          <strong>À corriger :</strong>
-          <ul>{[...e.etat.blocages, ...e.etat.avertissements].map((b) => <li>{b}</li>)}</ul>
-        </div>
-      )
-    }
-  </header>
-
-  <div class="fiche-grille">
-    <div>
-      <div class="prose" set:html={presentation} />
-
-      {delegations.length > 0 && (
-        <section>
-          <h2>{t('mun.delegations')}</h2>
-          <ul class="etiquettes">{delegations.map((p: string) => <li>{p}</li>)}</ul>
-        </section>
-      )}
-
-      {documents.length > 0 && (
-        <section>
-          <h2>{t('mun.documents')}</h2>
-          <ul class="documents">
-            {documents.map((p: any) => <li><a href={p.fichier} download>{L(p, 'intitule') || p.fichier.split('/').pop()}</a> <span class="meta">PDF</span></li>)}
-          </ul>
-        </section>
-      )}
-
-      {compteRendu && (
-        <section class="compte-rendu">
-          <h2>{t('evt.compteRendu')}</h2>
-          <div class="prose" set:html={compteRendu} />
-          {x.auteur_compte_rendu && <p class="meta">{t('evt.compteRenduPar')} {x.auteur_compte_rendu}</p>}
-          {x.resolution && <p><a class="bouton bouton-secondaire" href={x.resolution} download>{t('mun.resolution')} (PDF)</a></p>}
-          {distinctions.length > 0 && (
-            <>
-              <h3>{t('mun.distinctions')}</h3>
-              <dl class="distinctions">
-                {distinctions.map((p: any) => <><dt>{L(p, 'intitule')}</dt><dd>{p.nom}</dd></>)}
-              </dl>
-            </>
-          )}
-        </section>
-      )}
-
-      {photos.length > 0 && (
-        <section>
-          <h2>{t('evt.photos')}</h2>
-          <div class="photos">
-            {photos.map((p: any) => (
-              <figure>
-                <Image src={p.meta} alt={L(p, 'alt') ?? ''} width={800} loading="lazy" />
-                {p.credit && <figcaption>© {p.credit}</figcaption>}
-              </figure>
-            ))}
+<article data-fiche data-fin={e.fin?.getTime()}>
+  <header class="fiche-tete nuit" style={`--teinte: var(--${mun ? 'mun' : 'conf'})`}>
+    <div class="conteneur">
+      <p class="surtitre">
+        <a class:list={['pastille', `pastille-${e.type}`]} href={lien(lang, mun ? 'mun' : 'conferences')}>{t(mun ? 'evt.mun' : 'evt.conference')}</a>
+        {annule && <span class="pastille pastille-annule">{t('evt.annule')}</span>}
+        {!annule && e.debut && <span class="pastille pastille-compte" data-compte={e.debut.getTime()} hidden></span>}
+        <Etat etat={e.etat} />
+      </p>
+      <h1>{d.titre || '(sans titre)'}</h1>
+      {
+        APERCU && (e.etat.blocages.length > 0 || e.etat.avertissements.length > 0) && (
+          <div class="blocages">
+            <strong>À corriger :</strong>
+            <ul>{[...e.etat.blocages, ...e.etat.avertissements].map((b) => <li>{b}</li>)}</ul>
           </div>
-        </section>
-      )}
-    </div>
-
-    <aside class="pratique" aria-label={t('evt.quand')}>
-      <dl>
+        )
+      }
+      <dl class="faits">
         {e.debut && (
-          <>
+          <div>
             <dt>{t('evt.quand')}</dt>
             <dd>
               <time datetime={e.debut.toISOString()}>{jourComplet(e.debut, lang)}</time>
-              {aUneHeure(x.debut) && <><br />{heure(e.debut, lang)}{aUneHeure(x.fin) && e.fin && ` – ${heure(e.fin, lang)}`}</>}
+              {aUneHeure(x.debut) && <small>{heure(e.debut, lang)}{aUneHeure(x.fin) && e.fin && ` – ${heure(e.fin, lang)}`}</small>}
             </dd>
-          </>
+          </div>
         )}
-        {x.lieu && <><dt>{t('evt.ou')}</dt><dd>{x.lieu}</dd></>}
-        {!mun && x.intervenants?.length > 0 && (
-          <>
-            <dt>{t('evt.avec')}</dt>
-            {x.intervenants.map((i: any) => <dd><strong>{i.nom}</strong><br />{L(i, 'qualite')}</dd>)}
-          </>
-        )}
-        {mun && d.comite && <><dt>{t('mun.comite')}</dt><dd>{d.comite}</dd></>}
-        {mun && x.langue && <><dt>{t('mun.langue')}</dt><dd>{valeur(x.langue, lang)}</dd></>}
-        {mun && x.niveau && <><dt>{t('mun.niveau')}</dt><dd>{valeur(x.niveau, lang)}</dd></>}
-        {mun && x.public && <><dt>{t('mun.public')}</dt><dd>{valeur(x.public, lang)}</dd></>}
+        {x.lieu && <div><dt>{t('evt.ou')}</dt><dd>{x.lieu}</dd></div>}
+        {!mun && x.intervenants?.map((i: any) => <div><dt>{t('evt.avec')}</dt><dd>{i.nom}<small>{L(i, 'qualite')}</small></dd></div>)}
+        {mun && d.comite && <div><dt>{t('mun.comite')}</dt><dd>{d.comite}</dd></div>}
+        {mun && x.langue && <div><dt>{t('mun.langue')}</dt><dd>{valeur(x.langue, lang)}</dd></div>}
+        {mun && x.niveau && <div><dt>{t('mun.niveau')}</dt><dd>{valeur(x.niveau, lang)}</dd></div>}
+        {mun && x.public && <div><dt>{t('mun.public')}</dt><dd>{valeur(x.public, lang)}</dd></div>}
       </dl>
       {!annule && x.inscription && (
-        <div data-avant hidden={passe}>
-          <a class="bouton" href={x.inscription} rel="noopener" data-limite={e.limite?.getTime()}>{t('evt.inscription')}</a>
+        <div class="fiche-actions" data-avant hidden={passe}>
+          <a class="bouton" href={x.inscription} rel="noopener" data-limite={e.limite?.getTime()}>{t('evt.inscription')} <span aria-hidden="true">→</span></a>
           <p class="petit" data-clos hidden>{t('evt.clos')}</p>
-          {e.limite && x.date_limite && <p class="petit" data-limite={e.limite.getTime()}>{t('evt.limite')} {jourLong(e.limite && new Date(e.limite.getTime() - 1), lang)}.</p>}
+          {e.limite && x.date_limite && <p class="petit" data-limite={e.limite.getTime()}>{t('evt.limite')} {jourLong(new Date(e.limite.getTime() - 1), lang)}.</p>}
         </div>
       )}
-      {!annule && <p class="petit" data-apres hidden={!passe}>{t('evt.termine')}</p>}
-    </aside>
+      {!annule && <p class="petit fiche-actions" data-apres hidden={!passe}>{t('evt.termine')}</p>}
+    </div>
+  </header>
+
+  <div class="conteneur fiche-corps">
+    <div class="prose interface" set:html={presentation} />
+
+    {delegations.length > 0 && (
+      <section>
+        <h2>{t('mun.delegations')}</h2>
+        <Hemicycle delegations={delegations} titre={t('mun.delegations')} />
+      </section>
+    )}
+
+    {documents.length > 0 && (
+      <section>
+        <h2>{t('mun.documents')}</h2>
+        <ul class="documents">
+          {documents.map((p: any) => <li><a href={p.fichier} download data-astro-reload>{L(p, 'intitule') || p.fichier.split('/').pop()}</a></li>)}
+        </ul>
+      </section>
+    )}
+
+    {compteRendu && (
+      <section class="compte-rendu">
+        <p class="surtitre">{t('evt.compteRendu')}</p>
+        <div class="prose" set:html={compteRendu} />
+        {x.auteur_compte_rendu && <p class="meta" style="margin-top:1.5rem">{t('evt.compteRenduPar')} {x.auteur_compte_rendu}</p>}
+        {distinctions.length > 0 && (
+          <>
+            <h3>{t('mun.distinctions')}</h3>
+            <dl class="distinctions">
+              {distinctions.map((p: any) => <><dt>{L(p, 'intitule')}</dt><dd>{p.nom}</dd></>)}
+            </dl>
+          </>
+        )}
+        {x.resolution && <p style="margin:2rem 0 0"><a class="bouton bouton-secondaire" href={x.resolution} download data-astro-reload>{t('mun.resolution')} (PDF) ↓</a></p>}
+      </section>
+    )}
+
+    {photos.length > 0 && (
+      <section>
+        <h2>{t('evt.photos')}</h2>
+        <div class="photos">
+          {photos.map((p: any) => (
+            <figure>
+              <Image src={p.meta} alt={L(p, 'alt') ?? ''} width={800} loading="lazy" />
+              {p.credit && <figcaption>© {p.credit}</figcaption>}
+            </figure>
+          ))}
+        </div>
+      </section>
+    )}
   </div>
 </article>

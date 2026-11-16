@@ -5,6 +5,7 @@ auteurs:
   - src/content/auteurs/samir-benali.yaml
 thematiques:
   - src/content/thematiques/energie-climat.yaml
+zone: afrique-nord-sahel
 fr:
   titre: "Fleuves partagés : la diplomatie de l'eau"
   chapo: Un barrage en amont est un fait accompli pour ceux qui vivent en aval.

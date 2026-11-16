@@ -6,6 +6,7 @@ auteurs:
 thematiques:
   - src/content/thematiques/economie.yaml
   - src/content/thematiques/securite.yaml
+zone: asie-sud-est
 fr:
   titre: "Détroits : les points d'étranglement du commerce mondial"
   chapo: Une poignée de passages maritimes concentre une part décisive des échanges. Leur

@@ -12,8 +12,9 @@ avec la même adresse e-mail.
 2. Remplissez la **version française** : titre, chapô (2 à 3 phrases), corps.
 3. Remplissez la **version anglaise**. Elle est obligatoire : sans elle, l'article ne sera jamais en ligne.
 4. Choisissez vous-même comme **auteur**, puis une ou deux **thématiques**.
-5. Ajoutez l'**image de couverture** et ses cinq informations (voir plus bas).
-6. Laissez le statut sur **Brouillon** et enregistrez. Vous pouvez enregistrer un article inachevé.
+5. Si l'article porte sur une région, choisissez sa **zone sur le globe** : il apparaîtra sur le globe de la page d'accueil.
+6. Ajoutez l'**image de couverture** et ses cinq informations (voir plus bas).
+7. Laissez le statut sur **Brouillon** et enregistrez. Vous pouvez enregistrer un article inachevé.
 
 ## 3. Vérifier, puis soumettre
 

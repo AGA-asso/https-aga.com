@@ -1,8 +1,12 @@
 ---
-// Gabarit commun à toutes les pages : en-tête, sélecteur de langue, pied de page.
+// Gabarit commun à toutes les pages : en-tête, sélecteur de langue, thème, pied de page.
+import { ClientRouter } from 'astro:transitions';
 import '@fontsource-variable/inter';
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/instrument-serif/400-italic.css';
 import '@fontsource-variable/newsreader';
 import '@fontsource-variable/newsreader/wght-italic.css';
+import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
 import { t as traduire } from '../i18n/ui';
 import { APERCU, getReglages, lien, type Lang } from '../lib/content';
@@ -40,13 +44,28 @@ const actif = (seg: string) => chemin.startsWith(`/${lang}/${seg}/`) || (seg ===
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Avant le premier affichage : signale JavaScript et applique le thème choisi ou celui du système.
+      (() => {
+        const appliquer = () => {
+          let choix = null;
+          try { choix = localStorage.getItem('theme'); } catch {}
+          const sombre = choix ? choix === 'sombre' : matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = sombre ? 'sombre' : 'clair';
+          document.documentElement.classList.add('js');
+        };
+        appliquer();
+        document.addEventListener('astro:after-swap', appliquer);
+      })();
+    </script>
     <title>{titrePage}</title>
     <meta name="description" content={desc} />
     <link rel="canonical" href={absolu(chemin)} />
     <link rel="alternate" hreflang={lang} href={absolu(chemin)} />
     <link rel="alternate" hreflang={autre} href={absolu(cheminAutre)} />
-    <link rel="alternate" type="application/rss+xml" title={t('site')} href={lien(lang, 'rss.xml').replace(/\/$/, '')} />
+    <link rel="alternate" type="application/rss+xml" title={t('site')} href={`/${lang}/rss.xml`} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#070b14" />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content={t('site')} />
     <meta property="og:title" content={titre ?? t('site')} />
@@ -61,6 +80,7 @@ const actif = (seg: string) => chemin.startsWith(`/${lang}/${seg}/`) || (seg ===
         <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: r.cloudflare_analytics })} />
       )
     }
+    <ClientRouter />
   </head>
   <body>
     <a class="evitement" href="#contenu">{t('nav.contenu')}</a>
@@ -71,13 +91,20 @@ const actif = (seg: string) => chemin.startsWith(`/${lang}/${seg}/`) || (seg ===
         </p>
       )
     }
-    <header class="entete">
+    <header class="entete nuit" data-entete>
       <div class="conteneur entete-ligne">
         <a class="marque" href={lien(lang)} aria-label={t('site')}>
-          <span class="marque-sigle" aria-hidden="true">AGA</span>
-          <span class="marque-nom">Audencia<br />Global Affairs</span>
+          <svg class="marque-sigle" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="20" cy="20" r="18.5"></circle>
+            <g class="tourne">
+              <ellipse cx="20" cy="20" rx="8" ry="18.5"></ellipse>
+              <path d="M1.5 20h37M4.5 10.5h31M4.5 29.5h31"></path>
+            </g>
+            <circle cx="27.5" cy="12" r="3" fill="var(--accent)" stroke="none"></circle>
+          </svg>
+          <span class="marque-nom">Global Affairs<small>Audencia · Nantes</small></span>
         </a>
-        <nav aria-label={t('nav.menu')}>
+        <nav class="nav" id="menu" aria-label={t('nav.menu')}>
           <ul class="menu">
             {
               menu.map(([seg, libelle]) => (
@@ -88,11 +115,20 @@ const actif = (seg: string) => chemin.startsWith(`/${lang}/${seg}/`) || (seg ===
             }
           </ul>
         </nav>
-        <a class="langue" href={cheminAutre} hreflang={autre} lang={autre} aria-label={t('lang.changer')}>
-          <span aria-hidden="true" class="langue-ici">{lang.toUpperCase()}</span>
-          <span aria-hidden="true">/</span>
-          <span>{autre.toUpperCase()}</span>
-        </a>
+        <div class="outils">
+          <a class="langue" href={cheminAutre} hreflang={autre} lang={autre} aria-label={t('lang.changer')}>
+            <span aria-hidden="true" class="langue-ici">{lang.toUpperCase()}</span>
+            <span aria-hidden="true">/</span>
+            <span>{autre.toUpperCase()}</span>
+          </a>
+          <button class="bouton-icone" type="button" data-theme-bascule aria-label={t('theme.changer')}>
+            <svg class="icone-soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+            <svg class="icone-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"></path></svg>
+          </button>
+          <button class="bouton-icone burger" type="button" data-menu-bascule aria-expanded="false" aria-controls="menu" aria-label={t('nav.menu')}>
+            <span></span><span></span><span></span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -100,62 +136,180 @@ const actif = (seg: string) => chemin.startsWith(`/${lang}/${seg}/`) || (seg ===
       <slot />
     </main>
 
-    <footer class="pied">
-      <div class="conteneur pied-grille">
-        <div>
-          <p class="marque-pied">Audencia Global Affairs</p>
-          <p>{t('pied.asso')}</p>
-          <ul class="liens-pied">
-            <li><a href={lien(lang, 'nous-rejoindre')}>{t('nav.rejoindre')}</a></li>
-            <li><a href={lien(lang, 'contact')}>{t('nav.contact')}</a></li>
-            {r.instagram && <li><a href={r.instagram} rel="noopener">Instagram</a></li>}
-            {r.linkedin && <li><a href={r.linkedin} rel="noopener">LinkedIn</a></li>}
-            <li><a href={`/${lang}/rss.xml`}>{t('pied.rss')}</a></li>
-          </ul>
-        </div>
+    <footer class="pied nuit">
+      <div class="conteneur pied-haut">
         <Newsletter lang={lang} />
+        <nav class="pied-liens" aria-label={t('pied.suivre')}>
+          <div>
+            <p class="mono">{t('pied.explorer')}</p>
+            {menu.map(([seg, libelle]) => <a href={lien(lang, seg)}>{libelle}</a>)}
+          </div>
+          <div>
+            <p class="mono">{t('pied.suivre')}</p>
+            <a href={lien(lang, 'nous-rejoindre')}>{t('nav.rejoindre')}</a>
+            <a href={lien(lang, 'contact')}>{t('nav.contact')}</a>
+            {r.instagram && <a href={r.instagram} rel="noopener">Instagram</a>}
+            {r.linkedin && <a href={r.linkedin} rel="noopener">LinkedIn</a>}
+            <a href={`/${lang}/rss.xml`} data-astro-reload>{t('pied.rss')}</a>
+          </div>
+        </nav>
       </div>
-      <div class="conteneur pied-bas">
-        <span>© {new Date().getFullYear()} Audencia Global Affairs</span>
-        <a href={lien(lang, 'mentions-legales')}>{t('pied.legal')}</a>
-        <a href={lien(lang, 'confidentialite')}>{t('pied.confidentialite')}</a>
+      <div class="conteneur">
+        <p class="pied-signature" aria-hidden="true">Global Affairs</p>
+        <div class="pied-bas">
+          <span>© {new Date().getFullYear()} Audencia Global Affairs · {t('pied.asso')}</span>
+          <a href={lien(lang, 'mentions-legales')}>{t('pied.legal')}</a>
+          <a href={lien(lang, 'confidentialite')}>{t('pied.confidentialite')}</a>
+        </div>
       </div>
     </footer>
 
-    <script is:inline>
-      // Un site statique ne sait pas qu'une date est passée tant qu'il n'est pas
-      // reconstruit : ce script remet les événements à leur place à chaque visite.
-      (() => {
+    <script>
+      // Comportements communs. « astro:page-load » se déclenche au premier affichage
+      // puis après chaque changement de page (les pages s'enchaînent sans rechargement).
+      const calme = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Un site statique ne sait pas qu'une date est passée tant qu'il n'est pas reconstruit :
+      // on remet les événements à leur place à chaque visite.
+      function dates() {
         const now = Date.now();
-        const passe = (el, attr) => el.dataset[attr] && +el.dataset[attr] < now;
-        document.querySelectorAll('[data-limite]').forEach((el) => {
+        const passe = (el: HTMLElement, attr: string) => !!el.dataset[attr] && +el.dataset[attr]! < now;
+        document.querySelectorAll<HTMLElement>('[data-limite]').forEach((el) => {
           if (!passe(el, 'limite')) return;
           el.hidden = true;
-          const clos = el.parentElement.querySelector('[data-clos]');
+          const clos = el.parentElement?.querySelector<HTMLElement>('[data-clos]');
           if (clos) clos.hidden = false;
         });
-        document.querySelectorAll('[data-evenements="a-venir"]').forEach((liste) => {
+        document.querySelectorAll<HTMLElement>('[data-evenements="a-venir"]').forEach((liste) => {
           const zone = liste.closest('[data-agenda]') || document;
           const passes = zone.querySelector('[data-evenements="passes"]');
-          [...liste.querySelectorAll(':scope > [data-fin]')].forEach((carte) => {
+          liste.querySelectorAll<HTMLElement>(':scope > [data-fin]').forEach((carte) => {
             if (!passe(carte, 'fin')) return;
-            carte.querySelectorAll('[data-limite],[data-clos]').forEach((x) => x.remove());
+            carte.querySelectorAll('[data-limite],[data-clos],[data-compte]').forEach((x) => x.remove());
             if (passes) passes.prepend(carte);
             else carte.remove();
           });
           if (!liste.children.length) {
             liste.hidden = true;
-            const vide = zone.querySelector('[data-vide]');
+            const vide = zone.querySelector<HTMLElement>('[data-vide]');
             if (vide) vide.hidden = false;
           }
           if (passes && passes.children.length) passes.closest('[data-bloc-passes]')?.removeAttribute('hidden');
         });
-        document.querySelectorAll('[data-fiche][data-fin]').forEach((fiche) => {
+        document.querySelectorAll<HTMLElement>('[data-fiche][data-fin]').forEach((fiche) => {
           if (!passe(fiche, 'fin')) return;
-          fiche.querySelectorAll('[data-avant]').forEach((x) => (x.hidden = true));
-          fiche.querySelectorAll('[data-apres]').forEach((x) => (x.hidden = false));
+          fiche.querySelectorAll<HTMLElement>('[data-avant]').forEach((x) => (x.hidden = true));
+          fiche.querySelectorAll<HTMLElement>('[data-apres]').forEach((x) => (x.hidden = false));
         });
-      })();
+        // Compte à rebours : « dans 17 jours »
+        const fr = document.documentElement.lang === 'fr';
+        document.querySelectorAll<HTMLElement>('[data-compte]').forEach((el) => {
+          const j = Math.ceil((+el.dataset.compte! - now) / 864e5);
+          if (j < 0) return el.remove();
+          el.textContent = j <= 0 ? (fr ? "Aujourd'hui" : 'Today') : j === 1 ? (fr ? 'Demain' : 'Tomorrow') : fr ? `Dans ${j} jours` : `In ${j} days`;
+          el.hidden = false;
+        });
+        // Frise : repère « aujourd'hui » et points passés
+        document.querySelectorAll<HTMLElement>('[data-frise]').forEach((f) => {
+          const [a, b] = [+f.dataset.debut!, +f.dataset.fin!];
+          const repere = f.querySelector<HTMLElement>('[data-aujourdhui]');
+          if (repere && now > a && now < b) {
+            repere.style.left = `${((now - a) / (b - a)) * 100}%`;
+            repere.hidden = false;
+          }
+          f.querySelectorAll<HTMLElement>('[data-quand]').forEach((p) => p.classList.toggle('passe', +p.dataset.quand! < now));
+        });
+      }
+
+      function interface_() {
+        // En-tête : filet au défilement, menu mobile, thème
+        const entete = document.querySelector<HTMLElement>('[data-entete]');
+        const surDefilement = () => entete?.classList.toggle('defile', scrollY > 8);
+        surDefilement();
+        addEventListener('scroll', surDefilement, { passive: true });
+        const burger = document.querySelector<HTMLElement>('[data-menu-bascule]');
+        burger?.addEventListener('click', () => {
+          const ouvert = entete!.toggleAttribute('data-ouvert');
+          burger.setAttribute('aria-expanded', String(ouvert));
+          document.body.style.overflow = ouvert ? 'hidden' : '';
+        });
+        document.body.style.overflow = '';
+        document.querySelector('[data-theme-bascule]')?.addEventListener('click', () => {
+          const sombre = document.documentElement.dataset.theme !== 'sombre';
+          document.documentElement.dataset.theme = sombre ? 'sombre' : 'clair';
+          try { localStorage.setItem('theme', sombre ? 'sombre' : 'clair'); } catch {}
+          document.dispatchEvent(new Event('theme'));
+        });
+
+        // Apparition au défilement
+        const vus = new IntersectionObserver(
+          (es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('vu'), vus.unobserve(e.target))),
+          { rootMargin: '0px 0px -8% 0px' },
+        );
+        document.querySelectorAll('[data-reveler]').forEach((el) => vus.observe(el));
+
+        // Compteurs animés
+        const compter = new IntersectionObserver((es) =>
+          es.forEach((e) => {
+            if (!e.isIntersecting) return;
+            compter.unobserve(e.target);
+            const el = e.target as HTMLElement;
+            const cible = +el.dataset.compteur!;
+            if (calme() || cible === 0) return void (el.textContent = String(cible));
+            const t0 = performance.now();
+            const pas = (t: number) => {
+              const p = Math.min(1, (t - t0) / 1100);
+              el.textContent = String(Math.round(cible * (1 - Math.pow(1 - p, 3))));
+              if (p < 1 && el.isConnected) requestAnimationFrame(pas);
+            };
+            requestAnimationFrame(pas);
+          }),
+        );
+        document.querySelectorAll('[data-compteur]').forEach((el) => compter.observe(el));
+
+        // Article : barre de progression et sommaire actif
+        const barre = document.querySelector<HTMLElement>('[data-progression]');
+        const corps = document.querySelector<HTMLElement>('[data-lecture]');
+        if (barre && corps) {
+          const maj = () => {
+            if (!barre.isConnected) return removeEventListener('scroll', maj);
+            const r = corps.getBoundingClientRect();
+            barre.style.transform = `scaleX(${Math.min(1, Math.max(0, -r.top / (r.height - innerHeight * 0.6)))})`;
+          };
+          maj();
+          addEventListener('scroll', maj, { passive: true });
+        }
+        const liens = [...document.querySelectorAll<HTMLAnchorElement>('[data-sommaire] a')];
+        if (liens.length) {
+          const suivi = new IntersectionObserver(
+            (es) => es.forEach((e) => e.isIntersecting && liens.forEach((l) => l.classList.toggle('actif', l.hash === `#${e.target.id}`))),
+            { rootMargin: '-15% 0px -70% 0px' },
+          );
+          liens.forEach((l) => { const h = document.getElementById(decodeURIComponent(l.hash.slice(1))); if (h) suivi.observe(h); });
+        }
+
+        // Copier le lien de la page
+        document.querySelectorAll<HTMLElement>('[data-copier]').forEach((b) =>
+          b.addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText(location.href); } catch { return; }
+            const avant = b.getAttribute('aria-label');
+            b.setAttribute('aria-label', b.dataset.copier!);
+            b.classList.add('fait');
+            setTimeout(() => (b.setAttribute('aria-label', avant!), b.classList.remove('fait')), 1800);
+          }),
+        );
+
+        // Hémicycle : survol d'un nom ↔ siège
+        document.querySelectorAll<HTMLElement>('[data-hemicycle]').forEach((h) => {
+          const sieges = h.querySelectorAll('.siege');
+          const noms = h.querySelectorAll('li');
+          const activer = (i: number, oui: boolean) => (sieges[i]?.classList.toggle('actif', oui), noms[i]?.classList.toggle('actif', oui));
+          noms.forEach((n, i) => { n.addEventListener('pointerenter', () => activer(i, true)); n.addEventListener('pointerleave', () => activer(i, false)); });
+          sieges.forEach((s, i) => { s.addEventListener('pointerenter', () => activer(i, true)); s.addEventListener('pointerleave', () => activer(i, false)); });
+        });
+      }
+
+      document.addEventListener('astro:page-load', () => { dates(); interface_(); });
     </script>
   </body>
 </html>

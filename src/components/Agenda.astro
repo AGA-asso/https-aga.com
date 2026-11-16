@@ -4,6 +4,7 @@ import { t as traduire, type Cle } from '../i18n/ui';
 import { partager, type Evenement, type Lang } from '../lib/content';
 import { annee } from '../lib/dates';
 import CarteEvenement from './CarteEvenement.astro';
+import Frise from './Frise.astro';
 interface Props { evenements: Evenement[]; lang: Lang; titreAVenir: Cle; titrePasses: Cle }
 const { evenements, lang, titreAVenir, titrePasses } = Astro.props;
 const t = traduire(lang);
@@ -12,15 +13,16 @@ const annees = [...new Set(passes.map((e) => (e.debut ? annee(e.debut) : '')))];
 ---
 
 <div data-agenda>
-  <section class="bloc">
-    <h2 class="titre-section">{t(titreAVenir)}</h2>
+  <Frise evenements={evenements} lang={lang} />
+  <section>
+    <h2 class="titre-section seul">{t(titreAVenir)}</h2>
     <ul class="evenements" data-evenements="a-venir" hidden={aVenir.length === 0}>
       {aVenir.map((e) => <CarteEvenement evenement={e} lang={lang} />)}
     </ul>
     <p class="vide" data-vide hidden={aVenir.length > 0}>{t('evt.aucunAVenir')}</p>
   </section>
   <section class="bloc" data-bloc-passes hidden={passes.length === 0}>
-    <h2 class="titre-section">{t(titrePasses)}</h2>
+    <h2 class="titre-section seul">{t(titrePasses)}</h2>
     {annees.length === 0 && <ul class="evenements" data-evenements="passes" />}
     {
       annees.map((an, i) => (
