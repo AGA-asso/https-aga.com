@@ -1,0 +1,21 @@
+statut: publie
+debut: 2026-12-10T18:30
+fin: 2026-12-10T20:00
+lieu: Campus Atlantique, amphithéâtre A
+fr:
+  titre: "Routes maritimes : qui tient la mer ?"
+  presentation: "Une heure d'exposé puis trente minutes d'échange avec la salle sur la sécurité des
+    approvisionnements. *Texte de démonstration : il illustre la mise en page et ne constitue pas
+    une analyse.*"
+  compte_rendu: ""
+en:
+  titre: "Sea lanes: who rules the waves?"
+  presentation: "A one-hour talk followed by thirty minutes of discussion on supply security.
+    *Placeholder text: it illustrates the layout and is not an analysis.*"
+  compte_rendu: ""
+intervenants:
+  - nom: Pr Claire Vasseur
+    qualite_fr: Professeure d'économie internationale (intervenante fictive)
+    qualite_en: Professor of international economics (fictional speaker)
+inscription: https://tally.so/
+date_limite: 2026-12-09

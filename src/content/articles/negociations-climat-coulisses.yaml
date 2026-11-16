@@ -1,0 +1,68 @@
+statut: publie
+a_la_une: false
+date: 2026-10-14
+auteurs:
+  - src/content/auteurs/chloe-durand.yaml
+  - src/content/auteurs/tom-lefevre.yaml
+thematiques:
+  - src/content/thematiques/energie-climat.yaml
+  - src/content/thematiques/diplomatie.yaml
+fr:
+  titre: "Négociations climatiques : ce qui se joue en coulisses"
+  chapo: Les séances plénières font les images, les groupes de contact font le texte. Mode d'emploi
+    d'une négociation multilatérale.
+  corps: >-
+    Une conférence climatique ressemble à une pièce dont l'essentiel se joue hors scène. Les
+    compromis naissent dans de petites salles, entre délégués qui se connaissent depuis des années.
+
+
+    ## Le poids des crochets
+
+
+    Dans un projet de texte, chaque passage entre crochets signale un désaccord. La négociation
+    consiste à les faire disparaître un à un, souvent au prix d'une formulation volontairement
+    ambiguë.
+
+
+    > L'ambiguïté constructive est un outil, pas un accident.
+
+
+    C'est exactement ce que reproduisent nos sessions MUN : apprendre à lire un texte pour ce qu'il
+    évite de dire.
+
+
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+en:
+  titre: "Climate talks: what happens behind the scenes"
+  chapo: Plenary sessions make the pictures; contact groups make the text. A user guide to
+    multilateral negotiation.
+  corps: >-
+    A climate conference is like a play whose key scenes happen offstage. Compromises are born in
+    small rooms, among delegates who have known each other for years.
+
+
+    ## The weight of brackets
+
+
+    In a draft text, every bracketed passage marks a disagreement. Negotiating means removing them
+    one by one, often at the price of deliberately ambiguous wording.
+
+
+    > Constructive ambiguity is a tool, not an accident.
+
+
+    This is exactly what our MUN sessions reproduce: learning to read a text for what it avoids
+    saying.
+
+
+    *Placeholder text: it illustrates the layout and is not an analysis.*
+image:
+  fichier: /src/media/couvertures/reliefs-vert.jpg
+  alt_fr: Courbes de niveau claires sur fond vert
+  alt_en: Pale contour lines on a green background
+  credit: Audencia Global Affairs
+  source: https://aga.example
+  licence: Création AGA
+sources: |-
+  - Source de démonstration n° 1
+  - Source de démonstration n° 2

@@ -1,0 +1,307 @@
+# Configuration de Pages CMS : c'est ce fichier qui dessine les formulaires vus par
+# les rédacteurs et le bureau. Chaque « name » correspond à un champ des schémas de
+# src/content.config.ts ; si vous ajoutez un champ ici, ajoutez-le aussi là-bas.
+
+settings:
+  commit:
+    identity: user # l'historique garde le nom de la personne qui a enregistré
+
+media:
+  - name: images
+    label: Images
+    input: src/media
+    output: /src/media
+    rename: safe
+    extensions: [jpg, jpeg, png, webp]
+  - name: documents
+    label: Documents PDF
+    input: public/documents
+    output: /documents
+    rename: safe
+    extensions: [pdf]
+
+components:
+  statut_article:
+    type: select
+    label: Statut
+    description: "Brouillon : en cours d'écriture. À relire : prêt pour le rédacteur en chef. Publié : en ligne (réservé au rédacteur en chef)."
+    default: brouillon
+    required: true
+    options:
+      values:
+        - { name: brouillon, label: Brouillon }
+        - { name: a-relire, label: À relire }
+        - { name: publie, label: Publié }
+  statut_evenement:
+    type: select
+    label: Statut
+    description: "Annulé : l'événement reste visible, marqué comme annulé."
+    default: brouillon
+    required: true
+    options:
+      values:
+        - { name: brouillon, label: Brouillon }
+        - { name: publie, label: Publié }
+        - { name: annule, label: Annulé }
+  photos:
+    type: object
+    label: Photos
+    description: Uniquement avec l'accord des personnes reconnaissables.
+    list: { collapsible: { collapsed: true, summary: "Photo {index}" } }
+    fields:
+      - { name: fichier, label: Image, type: image, options: { media: images, path: photos } }
+      - { name: alt_fr, label: Description de l'image (français), type: string }
+      - { name: alt_en, label: Description de l'image (anglais), type: string }
+      - { name: credit, label: Crédit (photographe), type: string }
+
+content:
+  - name: articles
+    label: Articles
+    type: collection
+    path: src/content/articles
+    format: yaml
+    filename: { template: "{fields.fr.titre}.yaml", field: create }
+    view: { primary: fr.titre, fields: [fr.titre, statut, date], sort: [date], default: { sort: date, order: desc } }
+    fields:
+      - { name: statut, component: statut_article }
+      - name: fr
+        label: Version française
+        type: object
+        fields:
+          - { name: titre, label: Titre, type: string }
+          - { name: chapo, label: Chapô, type: text, description: "2 à 3 phrases, 300 caractères au plus.", options: { maxlength: 300 } }
+          - { name: corps, label: Corps de l'article, type: rich-text, options: { media: images, path: articles } }
+      - name: en
+        label: English version
+        description: Obligatoire pour publier. Un article sans version anglaise complète reste hors ligne.
+        type: object
+        fields:
+          - { name: titre, label: Title, type: string }
+          - { name: chapo, label: Standfirst, type: text, options: { maxlength: 300 } }
+          - { name: corps, label: Body, type: rich-text, options: { media: images, path: articles } }
+      - name: auteurs
+        label: Auteur(s)
+        type: reference
+        options: { collection: auteurs, multiple: true, min: 1, max: 3, value: "{path}", label: "{nom}" }
+      - name: thematiques
+        label: Thématique(s)
+        type: reference
+        options: { collection: thematiques, multiple: true, min: 1, max: 2, value: "{path}", label: "{fr.nom}" }
+      - { name: date, label: Date de publication, type: date, options: { format: yyyy-MM-dd } }
+      - name: image
+        label: Image de couverture
+        description: "Jamais de photo d'agence de presse (AFP, Reuters…) sans licence. Voir le guide du rédacteur pour les banques d'images libres."
+        type: object
+        fields:
+          - { name: fichier, label: Image, type: image, description: "Format paysage, 2 Mo au plus.", options: { media: images, path: couvertures } }
+          - { name: alt_fr, label: Description de l'image (français), type: string, description: Ce que montre l'image, pour les lecteurs qui ne la voient pas. }
+          - { name: alt_en, label: Description de l'image (anglais), type: string }
+          - { name: credit, label: Crédit, type: string, description: Auteur ou organisme. }
+          - { name: source, label: Adresse de la source, type: string, description: Lien vers la page où l'image a été trouvée., pattern: { regex: "^https?://.+", message: "Collez une adresse complète commençant par https://" } }
+          - name: licence
+            label: Licence
+            type: select
+            options: { values: [CC BY, CC BY-SA, CC0 / domaine public, Unsplash, Création AGA, Autorisation écrite] }
+      - { name: sources, label: Sources, type: rich-text, description: Affichées en fin d'article., options: { media: false } }
+      - { name: a_la_une, label: À la une, type: boolean, description: L'article coché le plus récent ouvre la page d'accueil. }
+
+  - name: sessions
+    label: Sessions MUN
+    type: collection
+    path: src/content/sessions
+    format: yaml
+    filename: { template: "{year}-{month}-{fields.fr.titre}.yaml", field: create }
+    view: { primary: fr.titre, fields: [fr.titre, statut, debut], sort: [debut], default: { sort: debut, order: desc } }
+    fields:
+      - { name: statut, component: statut_evenement }
+      - name: fr
+        label: Version française
+        type: object
+        fields:
+          - { name: titre, label: Titre, type: string }
+          - { name: comite, label: Comité simulé, type: string }
+          - { name: presentation, label: Thème et présentation, type: rich-text, options: { media: false } }
+          - { name: compte_rendu, label: Compte rendu (après la session), type: rich-text, options: { media: false } }
+      - name: en
+        label: English version
+        description: Obligatoire. Un compte rendu rempli dans une seule langue n'est pas affiché.
+        type: object
+        fields:
+          - { name: titre, label: Title, type: string }
+          - { name: comite, label: Committee, type: string }
+          - { name: presentation, label: Topic and presentation, type: rich-text, options: { media: false } }
+          - { name: compte_rendu, label: Report (after the session), type: rich-text, options: { media: false } }
+      - { name: debut, label: Début, type: date, options: { time: true, format: "yyyy-MM-dd'T'HH:mm" } }
+      - { name: fin, label: Fin, type: date, default: "", options: { time: true, format: "yyyy-MM-dd'T'HH:mm" } }
+      - { name: lieu, label: Lieu, type: string, description: Campus et salle. }
+      - name: langue
+        label: Langue de la session
+        type: select
+        options: { values: [{ name: francais, label: Français }, { name: anglais, label: Anglais }, { name: bilingue, label: Français et anglais }] }
+      - name: niveau
+        label: Niveau
+        type: select
+        options: { values: [{ name: debutant, label: Débutant }, { name: intermediaire, label: Intermédiaire }, { name: confirme, label: Confirmé }, { name: tous-niveaux, label: Tous niveaux }] }
+      - name: public
+        label: Public
+        type: select
+        options: { values: [{ name: membres, label: Membres de l'association }, { name: audencia, label: Étudiants Audencia }, { name: ouvert, label: Ouvert à tous }] }
+      - name: delegations
+        label: Délégations
+        description: Liste informative. L'attribution des pays se fait dans le formulaire d'inscription.
+        type: object
+        list: { collapsible: { collapsed: true, summary: "{fr}" } }
+        fields:
+          - { name: fr, label: Pays (français), type: string }
+          - { name: en, label: Pays (anglais), type: string }
+      - name: documents
+        label: Documents de préparation
+        type: object
+        list: { collapsible: { collapsed: true, summary: "{intitule_fr}" } }
+        fields:
+          - { name: intitule_fr, label: Intitulé (français), type: string }
+          - { name: intitule_en, label: Intitulé (anglais), type: string }
+          - { name: fichier, label: Fichier PDF, type: file, description: 10 Mo au plus., options: { media: documents } }
+      - { name: inscription, label: Lien d'inscription, type: string, description: Adresse du formulaire externe (Tally, HelloAsso…)., pattern: { regex: "^(https?://.+)?$", message: "Collez une adresse complète commençant par https://" } }
+      - { name: date_limite, label: Date limite d'inscription, type: date, default: "", options: { format: yyyy-MM-dd } }
+      - { name: resolution, label: Résolution adoptée (PDF), type: file, options: { media: documents } }
+      - name: distinctions
+        label: Distinctions
+        type: object
+        list: { collapsible: { collapsed: true, summary: "{intitule_fr} : {nom}" } }
+        fields:
+          - { name: intitule_fr, label: Intitulé (français), type: string }
+          - { name: intitule_en, label: Intitulé (anglais), type: string }
+          - { name: nom, label: Lauréat, type: string }
+      - { name: photos, component: photos }
+
+  - name: conferences
+    label: Conférences
+    type: collection
+    path: src/content/conferences
+    format: yaml
+    filename: { template: "{year}-{month}-{fields.fr.titre}.yaml", field: create }
+    view: { primary: fr.titre, fields: [fr.titre, statut, debut], sort: [debut], default: { sort: debut, order: desc } }
+    fields:
+      - { name: statut, component: statut_evenement }
+      - name: fr
+        label: Version française
+        type: object
+        fields:
+          - { name: titre, label: Titre, type: string }
+          - { name: presentation, label: Présentation, type: rich-text, options: { media: false } }
+          - { name: compte_rendu, label: Compte rendu (après la conférence), type: rich-text, description: À publier avec l'accord de l'intervenant., options: { media: false } }
+      - name: en
+        label: English version
+        type: object
+        fields:
+          - { name: titre, label: Title, type: string }
+          - { name: presentation, label: Presentation, type: rich-text, options: { media: false } }
+          - { name: compte_rendu, label: Report (after the talk), type: rich-text, options: { media: false } }
+      - name: intervenants
+        label: Intervenant(s)
+        type: object
+        list: { min: 1, collapsible: { summary: "{nom}" } }
+        fields:
+          - { name: nom, label: Nom, type: string }
+          - { name: qualite_fr, label: Qualité (français), type: string, description: "Exemple : Professeure de relations internationales, Audencia" }
+          - { name: qualite_en, label: Qualité (anglais), type: string }
+      - { name: debut, label: Début, type: date, options: { time: true, format: "yyyy-MM-dd'T'HH:mm" } }
+      - { name: fin, label: Fin, type: date, default: "", options: { time: true, format: "yyyy-MM-dd'T'HH:mm" } }
+      - { name: lieu, label: Lieu, type: string }
+      - { name: inscription, label: Lien d'inscription, type: string, pattern: { regex: "^(https?://.+)?$", message: "Collez une adresse complète commençant par https://" } }
+      - { name: date_limite, label: Date limite d'inscription, type: date, default: "", options: { format: yyyy-MM-dd } }
+      - { name: auteur_compte_rendu, label: Auteur du compte rendu, type: string }
+      - { name: photos, component: photos }
+
+  - name: association
+    label: Association
+    type: group
+    items:
+      - name: mandats
+        label: Bureaux (mandats)
+        type: collection
+        path: src/content/mandats
+        format: yaml
+        filename: "{fields.annee}.yaml"
+        view: { primary: annee, fields: [annee, en_cours] }
+        fields:
+          - { name: annee, label: Année, type: string, required: true, description: "Exemple : 2027-2028", pattern: { regex: "^\\d{4}-\\d{4}$", message: "Format attendu : 2027-2028" } }
+          - { name: en_cours, label: Mandat en cours, type: boolean, description: Ne cochez qu'un seul mandat ; décochez l'ancien. }
+          - name: membres
+            label: Membres
+            type: object
+            list: { collapsible: { summary: "{nom}, {fonction_fr}" } }
+            fields:
+              - { name: nom, label: Nom, type: string }
+              - { name: fonction_fr, label: Fonction (français), type: string }
+              - { name: fonction_en, label: Fonction (anglais), type: string }
+              - { name: photo, label: Photo (facultative), type: image, options: { media: images, path: bureau } }
+              - { name: linkedin, label: LinkedIn (facultatif), type: string }
+      - name: auteurs
+        label: Auteurs
+        type: collection
+        path: src/content/auteurs
+        format: yaml
+        filename: "{fields.nom}.yaml"
+        view: { primary: nom, fields: [nom, promotion] }
+        fields:
+          - { name: nom, label: Nom affiché, type: string, required: true, description: Sur demande d'un ancien, remplacez ici son nom par ses initiales. }
+          - { name: promotion, label: Promotion ou programme, type: string, description: "Exemple : PGE 2027" }
+      - name: thematiques
+        label: Thématiques
+        type: collection
+        path: src/content/thematiques
+        format: yaml
+        filename: "{fields.fr.nom}.yaml"
+        view: { primary: fr.nom, fields: [fr.nom, ordre] }
+        operations: { rename: false }
+        fields:
+          - { name: ordre, label: Ordre d'affichage, type: number }
+          - { name: fr, label: Français, type: object, fields: [{ name: nom, label: Nom, type: string, required: true }, { name: description, label: Description, type: text }] }
+          - { name: en, label: English, type: object, fields: [{ name: nom, label: Name, type: string, required: true }, { name: description, label: Description, type: text }] }
+
+  - name: pages
+    label: Pages et réglages
+    type: group
+    items:
+      - name: page-association
+        label: "Page : L'association"
+        type: file
+        path: src/content/pages/association.yaml
+        format: yaml
+        fields:
+          - { name: fr, label: Français, type: object, fields: [{ name: titre, label: Titre, type: string }, { name: texte, label: Texte, type: rich-text, options: { media: false } }] }
+          - { name: en, label: English, type: object, fields: [{ name: titre, label: Title, type: string }, { name: texte, label: Text, type: rich-text, options: { media: false } }] }
+      - name: page-mun
+        label: "Page : Présentation du MUN"
+        type: file
+        path: src/content/pages/mun.yaml
+        format: yaml
+        fields:
+          - { name: fr, label: Français, type: object, fields: [{ name: titre, label: Titre, type: string }, { name: texte, label: Texte, type: rich-text, options: { media: false } }] }
+          - { name: en, label: English, type: object, fields: [{ name: titre, label: Title, type: string }, { name: texte, label: Text, type: rich-text, options: { media: false } }] }
+      - name: page-rejoindre
+        label: "Page : Nous rejoindre"
+        type: file
+        path: src/content/pages/nous-rejoindre.yaml
+        format: yaml
+        fields:
+          - { name: fr, label: Français, type: object, fields: [{ name: titre, label: Titre, type: string }, { name: texte, label: Texte, type: rich-text, options: { media: false } }] }
+          - { name: en, label: English, type: object, fields: [{ name: titre, label: Title, type: string }, { name: texte, label: Text, type: rich-text, options: { media: false } }] }
+      - name: reglages
+        label: Réglages du site
+        type: file
+        path: src/content/reglages/site.yaml
+        format: yaml
+        fields:
+          - { name: directeur_publication, label: Directeur de la publication, type: string, description: Le président en exercice. À changer à chaque passation. }
+          - { name: siege, label: Adresse du siège, type: string }
+          - { name: rna, label: Numéro RNA, type: string, description: "Commence par W, suivi de 9 chiffres." }
+          - { name: email, label: E-mail de contact, type: string }
+          - { name: instagram, label: Lien Instagram, type: string }
+          - { name: linkedin, label: Lien LinkedIn, type: string }
+          - { name: brevo_formulaire, label: Adresse du formulaire Brevo (newsletter), type: string }
+          - { name: tally_contact, label: Adresse du formulaire Tally de contact, type: string }
+          - { name: tally_recrutement, label: Adresse du formulaire Tally de recrutement, type: string }
+          - { name: cloudflare_analytics, label: Jeton Cloudflare Web Analytics, type: string }

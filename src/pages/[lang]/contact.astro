@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import Formulaire from '../../components/Formulaire.astro';
+import { t as traduire } from '../../i18n/ui';
+import { LANGS, getReglages, type Lang } from '../../lib/content';
+
+export const getStaticPaths = () => LANGS.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const t = traduire(lang);
+const r = await getReglages();
+---
+
+<Base lang={lang} titre={t('contact.titre')} description={t('contact.intro')}>
+  <div class="conteneur etroit">
+    <header class="tete-page">
+      <h1>{t('contact.titre')}</h1>
+      <p class="intro">{t('contact.intro')}</p>
+    </header>
+    <Formulaire url={r.tally_contact} titre={t('contact.titre')} lang={lang} />
+    <div class="prose">
+      {r.email && <p>{t('contact.email')} : <a href={`mailto:${r.email}`}>{r.email}</a></p>}
+      <p>
+        {r.instagram && <a href={r.instagram} rel="noopener">Instagram</a>}
+        {r.instagram && r.linkedin && ' · '}
+        {r.linkedin && <a href={r.linkedin} rel="noopener">LinkedIn</a>}
+      </p>
+      <p class="petit">{t('contact.reponse')}</p>
+    </div>
+  </div>
+</Base>

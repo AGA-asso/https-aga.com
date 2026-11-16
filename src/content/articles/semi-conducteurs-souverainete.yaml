@@ -1,0 +1,65 @@
+statut: publie
+a_la_une: false
+date: 2026-09-30
+auteurs:
+  - src/content/auteurs/tom-lefevre.yaml
+thematiques:
+  - src/content/thematiques/numerique.yaml
+  - src/content/thematiques/economie.yaml
+fr:
+  titre: "Semi-conducteurs : la souveraineté a-t-elle un prix ?"
+  chapo: Relocaliser la production de puces est devenu un objectif politique. Encore faut-il savoir
+    quel maillon de la chaîne on veut maîtriser.
+  corps: >-
+    Une puce traverse plusieurs fois les frontières avant d'arriver dans un appareil. Conception,
+    fabrication, assemblage : aucune région ne maîtrise l'ensemble.
+
+
+    ## Choisir son maillon
+
+
+    Vouloir tout produire chez soi coûte cher et prend du temps. Viser un maillon dont les autres ne
+    peuvent se passer est une stratégie plus réaliste.
+
+
+    > L'interdépendance protège tant qu'elle reste réciproque.
+
+
+    La question n'est donc pas l'autonomie complète, mais la capacité à ne pas être le seul à
+    dépendre.
+
+
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+en:
+  titre: "Semiconductors: does sovereignty come at a price?"
+  chapo: Bringing chip production home has become a political goal. The real question is which link in
+    the chain to control.
+  corps: >-
+    A chip crosses borders several times before it reaches a device. Design, fabrication, assembly:
+    no region controls the whole process.
+
+
+    ## Choosing your link
+
+
+    Producing everything at home is costly and slow. Targeting a link that others cannot do without
+    is a more realistic strategy.
+
+
+    > Interdependence protects as long as it stays mutual.
+
+
+    The issue is therefore not full autonomy, but making sure you are not the only one who depends.
+
+
+    *Placeholder text: it illustrates the layout and is not an analysis.*
+image:
+  fichier: /src/media/couvertures/reseau-sarcelle.jpg
+  alt_fr: Réseau de points reliés sur fond bleu-vert
+  alt_en: Network of connected dots on a teal background
+  credit: Audencia Global Affairs
+  source: https://aga.example
+  licence: Création AGA
+sources: |-
+  - Source de démonstration n° 1
+  - Source de démonstration n° 2

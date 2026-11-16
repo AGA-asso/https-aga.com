@@ -1,0 +1,41 @@
+---
+// Composées à partir des réglages du CMS : au changement de président, une seule ligne à modifier.
+import Base from '../../layouts/Base.astro';
+import { t as traduire } from '../../i18n/ui';
+import { LANGS, getReglages, type Lang } from '../../lib/content';
+
+export const getStaticPaths = () => LANGS.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const t = traduire(lang);
+const r = await getReglages();
+const fr = lang === 'fr';
+const v = (x?: string | null) => x || (fr ? '[à compléter dans les réglages]' : '[to be completed in settings]');
+---
+
+<Base lang={lang} titre={t('pied.legal')}>
+  <div class="conteneur etroit">
+    <header class="tete-page"><h1>{t('pied.legal')}</h1></header>
+    <div class="prose">
+      <h2>{fr ? 'Éditeur' : 'Publisher'}</h2>
+      <p>
+        Audencia Global Affairs, {fr ? 'association régie par la loi du 1er juillet 1901' : 'a non-profit association governed by the French law of 1 July 1901'}.<br />
+        {fr ? 'Numéro RNA' : 'RNA number'} : {v(r.rna)}<br />
+        {fr ? 'Siège' : 'Registered office'} : {v(r.siege)}<br />
+        {fr ? 'Contact' : 'Contact'} : {r.email ? <a href={`mailto:${r.email}`}>{r.email}</a> : v()}
+      </p>
+      <h2>{fr ? 'Directeur de la publication' : 'Publication director'}</h2>
+      <p>{v(r.directeur_publication)}, {fr ? "en qualité de président de l'association." : 'as president of the association.'}</p>
+      <h2>{fr ? 'Hébergeur' : 'Hosting'}</h2>
+      <p>Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, {fr ? 'États-Unis' : 'USA'}. <a href="https://www.cloudflare.com" rel="noopener">cloudflare.com</a></p>
+      <h2>{fr ? 'Propriété intellectuelle' : 'Intellectual property'}</h2>
+      <p>
+        {fr
+          ? "Les articles restent la propriété de leurs auteurs, qui autorisent l'association à les publier. Toute reproduction au-delà de la courte citation suppose leur accord. Les images sont créditées sur chaque page avec leur source et leur licence."
+          : 'Articles remain the property of their authors, who authorise the association to publish them. Any reuse beyond short quotation requires their consent. Images are credited on each page with their source and licence.'}
+      </p>
+      <h2>{fr ? 'Responsabilité éditoriale' : 'Editorial responsibility'}</h2>
+      <p>{t('article.avertissement')}</p>
+      <p>{t('contact.reponse')}</p>
+    </div>
+  </div>
+</Base>

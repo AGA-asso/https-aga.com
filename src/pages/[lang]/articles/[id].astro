@@ -1,0 +1,89 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from '../../../layouts/Base.astro';
+import CarteArticle from '../../../components/CarteArticle.astro';
+import Etat from '../../../components/Etat.astro';
+import { t as traduire } from '../../../i18n/ui';
+import { APERCU, LANGS, getArticles, html, lien, minutesDeLecture, type Lang } from '../../../lib/content';
+import { jourLong } from '../../../lib/dates';
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  return LANGS.flatMap((lang) =>
+    articles.map((article) => ({
+      // La pagination de la liste occupe /articles/2/, /articles/3/… : un identifiant purement numérique est écarté.
+      params: { lang, id: article.id },
+      props: {
+        article,
+        voisins: articles.filter((a) => a.id !== article.id && a.themes.some((x) => article.themes.includes(x))).slice(0, 3),
+      },
+    })).filter((p) => !/^\d+$/.test(p.params.id)),
+  );
+}
+const lang = Astro.params.lang as Lang;
+const { article: a, voisins } = Astro.props;
+const t = traduire(lang);
+const d = a.data[lang] ?? {};
+const img = a.data.image;
+const corps = await html(d.corps);
+const sources = await html(a.data.sources);
+const partage = a.couverture ? (await getImage({ src: a.couverture, width: 1200, height: 630, format: 'png' })).src : undefined;
+---
+
+<Base lang={lang} titre={d.titre ?? ''} description={d.chapo ?? undefined} image={partage} type="article">
+  <article class="article">
+    <header class="conteneur etroit article-tete">
+      <p class="surtitre">
+        {a.themes.map((th, i) => <>{i > 0 && ' · '}<a href={lien(lang, `thematiques/${th.id}`)}>{th.data[lang]?.nom}</a></>)}
+        <Etat etat={a.etat} />
+      </p>
+      <h1>{d.titre || '(sans titre)'}</h1>
+      <p class="chapo">{d.chapo}</p>
+      <p class="meta">
+        {t('article.par')}{' '}
+        {a.auteurs.map((x, i) => <>{i > 0 && ', '}<strong>{x.nom}</strong>{x.promotion && ` (${x.promotion})`}</>)}
+        {a.date && <> · <time datetime={a.date.toISOString()}>{jourLong(a.date, lang)}</time></>}
+        {' · '}{minutesDeLecture(d.corps)} {t('article.lecture')}
+      </p>
+      {
+        APERCU && a.etat.blocages.length > 0 && (
+          <div class="blocages">
+            <strong>Non publiable en l'état :</strong>
+            <ul>{a.etat.blocages.map((b) => <li>{b}</li>)}</ul>
+          </div>
+        )
+      }
+    </header>
+    {
+      a.couverture && (
+        <figure class="conteneur article-couverture">
+          <Image src={a.couverture} alt={(lang === 'fr' ? img?.alt_fr : img?.alt_en) ?? ''} width={1200} height={675} loading="eager" />
+          <figcaption>
+            {t('article.credit')} : {img?.source ? <a href={img.source} rel="noopener">{img?.credit}</a> : img?.credit}
+            {img?.licence && ` · ${img.licence}`}
+          </figcaption>
+        </figure>
+      )
+    }
+    <div class="conteneur etroit">
+      <div class="prose" set:html={corps} />
+      {
+        sources && (
+          <section class="sources">
+            <h2>{t('article.sources')}</h2>
+            <div class="prose petit" set:html={sources} />
+          </section>
+        )
+      }
+      <p class="avertissement">{t('article.avertissement')}</p>
+    </div>
+  </article>
+  {
+    voisins.length > 0 && (
+      <section class="conteneur bloc">
+        <h2 class="titre-section">{t('article.memeTheme')}</h2>
+        <div class="grille-articles">{voisins.map((v) => <CarteArticle article={v} lang={lang} />)}</div>
+      </section>
+    )
+  }
+</Base>

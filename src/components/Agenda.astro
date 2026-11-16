@@ -1,0 +1,36 @@
+---
+// Liste « à venir » puis « passés » (groupés par année), pour un ensemble d'événements.
+import { t as traduire, type Cle } from '../i18n/ui';
+import { partager, type Evenement, type Lang } from '../lib/content';
+import { annee } from '../lib/dates';
+import CarteEvenement from './CarteEvenement.astro';
+interface Props { evenements: Evenement[]; lang: Lang; titreAVenir: Cle; titrePasses: Cle }
+const { evenements, lang, titreAVenir, titrePasses } = Astro.props;
+const t = traduire(lang);
+const { aVenir, passes } = partager(evenements);
+const annees = [...new Set(passes.map((e) => (e.debut ? annee(e.debut) : '')))];
+---
+
+<div data-agenda>
+  <section class="bloc">
+    <h2 class="titre-section">{t(titreAVenir)}</h2>
+    <ul class="evenements" data-evenements="a-venir" hidden={aVenir.length === 0}>
+      {aVenir.map((e) => <CarteEvenement evenement={e} lang={lang} />)}
+    </ul>
+    <p class="vide" data-vide hidden={aVenir.length > 0}>{t('evt.aucunAVenir')}</p>
+  </section>
+  <section class="bloc" data-bloc-passes hidden={passes.length === 0}>
+    <h2 class="titre-section">{t(titrePasses)}</h2>
+    {annees.length === 0 && <ul class="evenements" data-evenements="passes" />}
+    {
+      annees.map((an, i) => (
+        <>
+          {annees.length > 1 && <h3 class="annee">{an}</h3>}
+          <ul class="evenements" data-evenements={i === 0 ? 'passes' : undefined}>
+            {passes.filter((e) => (e.debut ? annee(e.debut) : '') === an).map((e) => <CarteEvenement evenement={e} lang={lang} passe />)}
+          </ul>
+        </>
+      ))
+    }
+  </section>
+</div>

@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import { t as traduire } from '../../i18n/ui';
+import { LANGS, getReglages, type Lang } from '../../lib/content';
+
+export const getStaticPaths = () => LANGS.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const t = traduire(lang);
+const r = await getReglages();
+const fr = lang === 'fr';
+const mail = r.email || '[e-mail]';
+---
+
+<Base lang={lang} titre={t('pied.confidentialite')}>
+  <div class="conteneur etroit">
+    <header class="tete-page"><h1>{t('pied.confidentialite')}</h1></header>
+    {fr ? (
+      <div class="prose">
+        <p>Ce site ne dépose aucun cookie et ne vous demande aucun compte. Voici les seuls cas où des données vous concernant sont traitées.</p>
+        <h2>Lettre d'information</h2>
+        <p>Votre adresse e-mail est collectée avec votre accord, confirmé par un e-mail de validation. Elle est conservée par notre prestataire Brevo (France) jusqu'à votre désinscription, possible depuis chaque envoi.</p>
+        <h2>Formulaires de contact et de recrutement</h2>
+        <p>Les informations saisies sont traitées par Tally (Belgique) et transmises au bureau de l'association. Elles sont supprimées au plus tard un an après le dernier échange.</p>
+        <h2>Inscriptions aux événements</h2>
+        <p>Les inscriptions se font sur un formulaire externe indiqué pour chaque événement. Les listes de participants sont supprimées après l'événement.</p>
+        <h2>Mesure d'audience</h2>
+        <p>Nous utilisons Cloudflare Web Analytics, qui compte les visites sans cookie et sans identifier les visiteurs.</p>
+        <h2>Auteurs, intervenants et photos</h2>
+        <p>Les noms des auteurs et des intervenants, ainsi que les photos d'événements, sont publiés avec l'accord des personnes concernées. Chacun peut demander à tout moment le retrait de son nom ou d'une photo.</p>
+        <h2>Vos droits</h2>
+        <p>Vous pouvez demander l'accès à vos données, leur rectification ou leur suppression en écrivant à <a href={`mailto:${mail}`}>{mail}</a>. Vous pouvez aussi saisir la CNIL (cnil.fr).</p>
+      </div>
+    ) : (
+      <div class="prose">
+        <p>This site sets no cookies and requires no account. These are the only cases in which data about you is processed.</p>
+        <h2>Newsletter</h2>
+        <p>Your email address is collected with your consent, confirmed by a validation email. It is stored by our provider Brevo (France) until you unsubscribe, which you can do from any email.</p>
+        <h2>Contact and membership forms</h2>
+        <p>The information you enter is processed by Tally (Belgium) and passed on to the association's board. It is deleted no later than one year after the last exchange.</p>
+        <h2>Event registration</h2>
+        <p>Registration takes place on an external form linked from each event. Participant lists are deleted after the event.</p>
+        <h2>Audience measurement</h2>
+        <p>We use Cloudflare Web Analytics, which counts visits without cookies and without identifying visitors.</p>
+        <h2>Authors, speakers and photos</h2>
+        <p>Names of authors and speakers, and event photos, are published with the consent of the people concerned. Anyone may ask at any time for their name or a photo to be removed.</p>
+        <h2>Your rights</h2>
+        <p>You may request access to, correction of or deletion of your data by writing to <a href={`mailto:${mail}`}>{mail}</a>. You may also lodge a complaint with the French data protection authority (cnil.fr).</p>
+      </div>
+    )}
+  </div>
+</Base>

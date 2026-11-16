@@ -1,0 +1,21 @@
+---
+// Inscription à la newsletter : formulaire Brevo dont l'adresse est saisie dans les réglages.
+import { t as traduire } from '../i18n/ui';
+import { getReglages, type Lang } from '../lib/content';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = traduire(lang);
+const { brevo_formulaire } = await getReglages();
+---
+
+<section class="newsletter" aria-labelledby="news-titre">
+  <h2 id="news-titre">{t('news.titre')}</h2>
+  <p>{t('news.texte')}</p>
+  <form action={brevo_formulaire || undefined} method="post" target="_blank">
+    <label class="sr" for="news-email">{t('news.email')}</label>
+    <input id="news-email" type="email" name="EMAIL" required autocomplete="email" placeholder={t('news.email')} disabled={!brevo_formulaire} />
+    <input type="hidden" name="locale" value={lang} />
+    <button type="submit" disabled={!brevo_formulaire}>{t('news.bouton')}</button>
+  </form>
+  <p class="petit">{brevo_formulaire ? t('news.mention') : t('form.aBrancher')}</p>
+</section>

@@ -1,0 +1,40 @@
+---
+import Base from '../../../layouts/Base.astro';
+import CarteArticle from '../../../components/CarteArticle.astro';
+import { t as traduire } from '../../../i18n/ui';
+import { LANGS, getArticles, getThematiques, lien, type Lang } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const [themes, articles] = await Promise.all([getThematiques(), getArticles()]);
+  return LANGS.flatMap((lang) =>
+    themes.map((theme) => ({
+      params: { lang, id: theme.id },
+      props: { theme, themes, articles: articles.filter((a) => a.themes.some((x) => x.id === theme.id)) },
+    })),
+  );
+}
+const lang = Astro.params.lang as Lang;
+const { theme, themes, articles } = Astro.props;
+const t = traduire(lang);
+const d = theme.data[lang]!;
+---
+
+<Base lang={lang} titre={d.nom!} description={d.description ?? undefined}>
+  <div class="conteneur">
+    <header class="tete-page">
+      <p class="surtitre">{t('articles.titre')}</p>
+      <h1>{d.nom}</h1>
+      {d.description && <p class="intro">{d.description}</p>}
+    </header>
+    <ul class="filtres">
+      <li><a href={lien(lang, 'articles')}>{t('articles.toutes')}</a></li>
+      {themes.map((th) => (
+        <li><a href={lien(lang, `thematiques/${th.id}`)} aria-current={th.id === theme.id ? 'page' : undefined}>{th.data[lang]?.nom}</a></li>
+      ))}
+    </ul>
+    {articles.length === 0 && <p class="vide">{t('articles.aucun')}</p>}
+    <div class="grille-articles">
+      {articles.map((a) => <CarteArticle article={a} lang={lang} niveau="h2" />)}
+    </div>
+  </div>
+</Base>

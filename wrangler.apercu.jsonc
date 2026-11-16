@@ -1,0 +1,13 @@
+// Site d'aperçu (brouillons visibles) : tout passe d'abord par le Worker qui demande le mot de passe.
+{
+  "name": "aga-apercu",
+  "main": "./scripts/apercu-worker.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./dist-apercu",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "404-page"
+  }
+}

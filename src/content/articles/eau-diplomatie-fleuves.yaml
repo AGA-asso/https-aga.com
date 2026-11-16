@@ -1,0 +1,36 @@
+statut: publie
+a_la_une: false
+date: 2026-11-12
+auteurs:
+  - src/content/auteurs/samir-benali.yaml
+thematiques:
+  - src/content/thematiques/energie-climat.yaml
+fr:
+  titre: "Fleuves partagés : la diplomatie de l'eau"
+  chapo: Un barrage en amont est un fait accompli pour ceux qui vivent en aval.
+  corps: |-
+    Les grands fleuves ignorent les frontières, pas les États qui les aménagent.
+
+    ## Amont contre aval
+
+    Le droit international pose un principe d'usage équitable, sans dire comment le mesurer.
+
+    > L'eau se partage mieux quand on partage aussi les données.
+
+    Les commissions de bassin offrent un cadre, à condition d'être dotées de moyens.
+
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+en:
+  titre: "Shared rivers: the diplomacy of water"
+  chapo: ""
+  corps: ""
+image:
+  fichier: /src/media/couvertures/reliefs-vert.jpg
+  alt_fr: Courbes de niveau sur fond vert
+  alt_en: Contour lines on a green background
+  credit: Audencia Global Affairs
+  source: https://aga.example
+  licence: Création AGA
+sources: |-
+  - Source de démonstration n° 1
+  - Source de démonstration n° 2

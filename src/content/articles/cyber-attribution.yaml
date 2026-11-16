@@ -1,0 +1,43 @@
+statut: brouillon
+a_la_une: false
+date: 2026-11-20
+auteurs:
+  - src/content/auteurs/tom-lefevre.yaml
+thematiques:
+  - src/content/thematiques/numerique.yaml
+fr:
+  titre: "Cyberattaques : qui accuser, et sur quelle preuve ?"
+  chapo: L'attribution d'une attaque informatique est autant une décision politique qu'un constat
+    technique.
+  corps: >-
+    Désigner l'auteur d'une cyberattaque suppose des indices techniques, mais aussi la volonté de
+    les rendre publics.
+
+
+    ## Prouver sans tout montrer
+
+
+    Révéler ses preuves, c'est révéler ses capacités de détection.
+
+
+    > Accuser est un acte diplomatique.
+
+
+    D'où des attributions collectives, portées par plusieurs États à la fois.
+
+
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+en:
+  titre: "Cyberattacks: who to blame, and on what evidence?"
+  chapo: ""
+  corps: ""
+image:
+  fichier: /src/media/couvertures/trames-nuit.jpg
+  alt_fr: Trame de carrés sur fond sombre
+  alt_en: ""
+  credit: ""
+  source: https://aga.example
+  licence: Création AGA
+sources: |-
+  - Source de démonstration n° 1
+  - Source de démonstration n° 2

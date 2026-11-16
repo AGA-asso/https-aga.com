@@ -1,0 +1,44 @@
+---
+// Une ligne d'agenda. data-fin et data-limite servent au script de Base.astro.
+import { t as traduire } from '../i18n/ui';
+import { lien, type Evenement, type Lang } from '../lib/content';
+import { annee, aUneHeure, heure, jourDuMois, moisCourt } from '../lib/dates';
+import Etat from './Etat.astro';
+interface Props { evenement: Evenement; lang: Lang; passe?: boolean; niveau?: 'h2' | 'h3' }
+const { evenement: e, lang, passe = false, niveau: H = 'h3' } = Astro.props;
+const t = traduire(lang);
+const d = e.data[lang] ?? {};
+const annule = e.etat.statut === 'annule';
+---
+
+<li class:list={['evenement', { annule }]} data-fin={e.fin?.getTime()}>
+  <div class="evenement-date" aria-hidden="true">
+    {e.debut ? (
+      <>
+        <span class="jour">{jourDuMois(e.debut)}</span>
+        <span class="mois">{moisCourt(e.debut, lang)}</span>
+        <span class="an">{annee(e.debut)}</span>
+      </>
+    ) : <span class="mois">?</span>}
+  </div>
+  <div class="evenement-corps">
+    <p class="surtitre">
+      <span class:list={['pastille', `pastille-${e.type}`]}>{t(e.type === 'mun' ? 'evt.mun' : 'evt.conference')}</span>
+      {annule && <span class="pastille pastille-annule">{t('evt.annule')}</span>}
+      <Etat etat={e.etat} />
+    </p>
+    <H class="evenement-titre"><a href={lien(lang, e.chemin)}>{d.titre || '(sans titre)'}</a></H>
+    <p class="meta">
+      {e.debut && <time datetime={e.debut.toISOString()}>{aUneHeure(e.data.debut) && heure(e.debut, lang)}</time>}
+      {e.data.lieu && <> · {e.data.lieu}</>}
+      {e.type === 'conference' && e.data.intervenants?.length > 0 && <> · {e.data.intervenants.map((i: any) => i.nom).join(', ')}</>}
+    </p>
+  </div>
+  {
+    !passe && !annule && e.data.inscription && (
+      <div class="evenement-action">
+        <a class="bouton bouton-petit" href={e.data.inscription} rel="noopener" data-limite={e.limite?.getTime()}>{t('evt.inscription')}</a>
+      </div>
+    )
+  }
+</li>

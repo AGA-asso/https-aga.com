@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import Formulaire from '../../components/Formulaire.astro';
+import { t as traduire } from '../../i18n/ui';
+import { LANGS, getPage, getReglages, type Lang } from '../../lib/content';
+
+export const getStaticPaths = () => LANGS.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const t = traduire(lang);
+const page = await getPage('nous-rejoindre', lang);
+const r = await getReglages();
+---
+
+<Base lang={lang} titre={page.titre || t('nav.rejoindre')}>
+  <div class="conteneur etroit">
+    <header class="tete-page"><h1>{page.titre || t('nav.rejoindre')}</h1></header>
+    <div class="prose" set:html={page.texte} />
+    <Formulaire url={r.tally_recrutement} titre={t('nav.rejoindre')} lang={lang} />
+  </div>
+</Base>

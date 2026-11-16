@@ -1,0 +1,48 @@
+---
+// « État des contenus » : n'existe que sur le site d'aperçu (SHOW_DRAFTS=true).
+// Liste tout ce qui n'est pas en ligne sur le site public, avec la raison.
+import Base from '../../layouts/Base.astro';
+import { valeur } from '../../i18n/ui';
+import { APERCU, getArticles, getEvenements, lien } from '../../lib/content';
+
+export const getStaticPaths = () => (APERCU ? [{ params: { page: 'etat' } }] : []);
+const articles = await getArticles({ tous: true });
+const evenements = await getEvenements({ tous: true });
+const lignes = [
+  ...articles.map((a) => ({ type: 'Article', titre: a.data.fr?.titre || a.data.en?.titre || a.id, url: lien('fr', `articles/${a.id}`), etat: a.etat })),
+  ...evenements.map((e) => ({ type: e.type === 'mun' ? 'Session MUN' : 'Conférence', titre: e.data.fr?.titre || e.data.en?.titre || e.id, url: lien('fr', e.chemin), etat: e.etat })),
+];
+const aTraiter = lignes.filter((l) => !l.etat.enLigne || l.etat.avertissements.length > 0);
+const libelle = (l: (typeof lignes)[number]) =>
+  l.etat.enLigne ? 'En ligne, à compléter' : l.etat.statut === 'publie' || l.etat.statut === 'annule' ? 'Bloqué' : valeur(l.etat.statut, 'fr');
+---
+
+<Base lang="fr" titre="État des contenus">
+  <div class="conteneur">
+    <header class="tete-page">
+      <h1>État des contenus</h1>
+      <p class="intro">
+        {lignes.filter((l) => l.etat.enLigne).length} contenus en ligne sur le site public, {aTraiter.length} à traiter.
+        Un contenu « Bloqué » est marqué Publié mais incomplet : il n'apparaît pas tant que les points listés ne sont pas corrigés.
+      </p>
+    </header>
+    {aTraiter.length === 0 ? <p class="vide">Rien à traiter : tout est en ligne.</p> : (
+      <table class="etat">
+        <thead><tr><th>Contenu</th><th>État</th><th>À corriger</th></tr></thead>
+        <tbody>
+          {aTraiter.map((l) => (
+            <tr>
+              <td><span class="meta">{l.type}</span><br /><a href={l.url}>{l.titre}</a></td>
+              <td><span class="pastille pastille-etat">{libelle(l)}</span></td>
+              <td>
+                {[...l.etat.blocages, ...l.etat.avertissements].length === 0
+                  ? <span class="meta">Complet : en attente de publication.</span>
+                  : <ul>{[...l.etat.blocages, ...l.etat.avertissements].map((b) => <li>{b}</li>)}</ul>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+</Base>

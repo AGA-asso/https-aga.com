@@ -1,0 +1,27 @@
+---
+import { Image } from 'astro:assets';
+import { lien, type Article, type Lang } from '../lib/content';
+import { jourLong } from '../lib/dates';
+import Etat from './Etat.astro';
+interface Props { article: Article; lang: Lang; niveau?: 'h2' | 'h3' }
+const { article: a, lang, niveau: H = 'h3' } = Astro.props;
+const d = a.data[lang] ?? {};
+---
+
+<article class="carte-article">
+  {
+    a.couverture && (
+      <Image class="carte-image" src={a.couverture} alt="" width={640} height={400} loading="lazy" />
+    )
+  }
+  <p class="surtitre">
+    {a.themes[0]?.data[lang]?.nom}
+    <Etat etat={a.etat} />
+  </p>
+  <H class="carte-titre"><a href={lien(lang, `articles/${a.id}`)}>{d.titre || '(sans titre)'}</a></H>
+  <p class="carte-chapo">{d.chapo}</p>
+  <p class="meta">
+    {a.auteurs.map((x) => x.nom).join(', ')}
+    {a.date && <> · <time datetime={a.date.toISOString()}>{jourLong(a.date, lang)}</time></>}
+  </p>
+</article>

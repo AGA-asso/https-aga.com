@@ -1,0 +1,161 @@
+---
+// Gabarit commun à toutes les pages : en-tête, sélecteur de langue, pied de page.
+import '@fontsource-variable/inter';
+import '@fontsource-variable/newsreader';
+import '@fontsource-variable/newsreader/wght-italic.css';
+import '../styles/global.css';
+import { t as traduire } from '../i18n/ui';
+import { APERCU, getReglages, lien, type Lang } from '../lib/content';
+import Newsletter from '../components/Newsletter.astro';
+
+interface Props {
+  lang: Lang;
+  titre?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+}
+const { lang, titre, description, image, type = 'website' } = Astro.props;
+const t = traduire(lang);
+const r = await getReglages();
+const autre: Lang = lang === 'fr' ? 'en' : 'fr';
+const chemin = Astro.url.pathname;
+// Le sélecteur de langue mène à la même page dans l'autre langue.
+const cheminAutre = chemin.replace(/^\/(fr|en)(\/|$)/, `/${autre}/`);
+const absolu = (p: string) => new URL(p, Astro.site).href;
+const titrePage = titre ? `${titre} · ${t('site')}` : `${t('site')} · ${t('baseline')}`;
+const desc = description ?? t('description');
+const menu = [
+  ['articles', t('nav.articles')],
+  ['conferences', t('nav.conferences')],
+  ['mun', t('nav.mun')],
+  ['agenda', t('nav.agenda')],
+  ['association', t('nav.association')],
+] as const;
+const actif = (seg: string) => chemin.startsWith(`/${lang}/${seg}/`) || (seg === 'articles' && chemin.startsWith(`/${lang}/thematiques/`));
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titrePage}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={absolu(chemin)} />
+    <link rel="alternate" hreflang={lang} href={absolu(chemin)} />
+    <link rel="alternate" hreflang={autre} href={absolu(cheminAutre)} />
+    <link rel="alternate" type="application/rss+xml" title={t('site')} href={lien(lang, 'rss.xml').replace(/\/$/, '')} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={t('site')} />
+    <meta property="og:title" content={titre ?? t('site')} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={absolu(chemin)} />
+    <meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_GB'} />
+    {image && <meta property="og:image" content={absolu(image)} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    {APERCU && <meta name="robots" content="noindex, nofollow" />}
+    {
+      r.cloudflare_analytics && !APERCU && (
+        <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: r.cloudflare_analytics })} />
+      )
+    }
+  </head>
+  <body>
+    <a class="evitement" href="#contenu">{t('nav.contenu')}</a>
+    {
+      APERCU && (
+        <p class="bandeau-apercu">
+          {t('apercu.bandeau')} <a href="/apercu/etat/">{t('apercu.etat')}</a>
+        </p>
+      )
+    }
+    <header class="entete">
+      <div class="conteneur entete-ligne">
+        <a class="marque" href={lien(lang)} aria-label={t('site')}>
+          <span class="marque-sigle" aria-hidden="true">AGA</span>
+          <span class="marque-nom">Audencia<br />Global Affairs</span>
+        </a>
+        <nav aria-label={t('nav.menu')}>
+          <ul class="menu">
+            {
+              menu.map(([seg, libelle]) => (
+                <li>
+                  <a href={lien(lang, seg)} aria-current={actif(seg) ? 'page' : undefined}>{libelle}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <a class="langue" href={cheminAutre} hreflang={autre} lang={autre} aria-label={t('lang.changer')}>
+          <span aria-hidden="true" class="langue-ici">{lang.toUpperCase()}</span>
+          <span aria-hidden="true">/</span>
+          <span>{autre.toUpperCase()}</span>
+        </a>
+      </div>
+    </header>
+
+    <main id="contenu">
+      <slot />
+    </main>
+
+    <footer class="pied">
+      <div class="conteneur pied-grille">
+        <div>
+          <p class="marque-pied">Audencia Global Affairs</p>
+          <p>{t('pied.asso')}</p>
+          <ul class="liens-pied">
+            <li><a href={lien(lang, 'nous-rejoindre')}>{t('nav.rejoindre')}</a></li>
+            <li><a href={lien(lang, 'contact')}>{t('nav.contact')}</a></li>
+            {r.instagram && <li><a href={r.instagram} rel="noopener">Instagram</a></li>}
+            {r.linkedin && <li><a href={r.linkedin} rel="noopener">LinkedIn</a></li>}
+            <li><a href={`/${lang}/rss.xml`}>{t('pied.rss')}</a></li>
+          </ul>
+        </div>
+        <Newsletter lang={lang} />
+      </div>
+      <div class="conteneur pied-bas">
+        <span>© {new Date().getFullYear()} Audencia Global Affairs</span>
+        <a href={lien(lang, 'mentions-legales')}>{t('pied.legal')}</a>
+        <a href={lien(lang, 'confidentialite')}>{t('pied.confidentialite')}</a>
+      </div>
+    </footer>
+
+    <script is:inline>
+      // Un site statique ne sait pas qu'une date est passée tant qu'il n'est pas
+      // reconstruit : ce script remet les événements à leur place à chaque visite.
+      (() => {
+        const now = Date.now();
+        const passe = (el, attr) => el.dataset[attr] && +el.dataset[attr] < now;
+        document.querySelectorAll('[data-limite]').forEach((el) => {
+          if (!passe(el, 'limite')) return;
+          el.hidden = true;
+          const clos = el.parentElement.querySelector('[data-clos]');
+          if (clos) clos.hidden = false;
+        });
+        document.querySelectorAll('[data-evenements="a-venir"]').forEach((liste) => {
+          const zone = liste.closest('[data-agenda]') || document;
+          const passes = zone.querySelector('[data-evenements="passes"]');
+          [...liste.querySelectorAll(':scope > [data-fin]')].forEach((carte) => {
+            if (!passe(carte, 'fin')) return;
+            carte.querySelectorAll('[data-limite],[data-clos]').forEach((x) => x.remove());
+            if (passes) passes.prepend(carte);
+            else carte.remove();
+          });
+          if (!liste.children.length) {
+            liste.hidden = true;
+            const vide = zone.querySelector('[data-vide]');
+            if (vide) vide.hidden = false;
+          }
+          if (passes && passes.children.length) passes.closest('[data-bloc-passes]')?.removeAttribute('hidden');
+        });
+        document.querySelectorAll('[data-fiche][data-fin]').forEach((fiche) => {
+          if (!passe(fiche, 'fin')) return;
+          fiche.querySelectorAll('[data-avant]').forEach((x) => (x.hidden = true));
+          fiche.querySelectorAll('[data-apres]').forEach((x) => (x.hidden = false));
+        });
+      })();
+    </script>
+  </body>
+</html>

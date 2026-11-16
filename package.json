@@ -1,0 +1,26 @@
+{
+  "name": "audencia-global-affairs",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "build:apercu": "SHOW_DRAFTS=true astro build --outDir dist-apercu",
+    "preview": "wrangler dev",
+    "preview:apercu": "wrangler dev -c wrangler.apercu.jsonc --port 8788 --var APERCU_MOT_DE_PASSE:essai"
+  },
+  "dependencies": {
+    "@astrojs/rss": "4.0.19",
+    "@astrojs/sitemap": "3.7.5",
+    "@fontsource-variable/inter": "5.3.0",
+    "@fontsource-variable/newsreader": "5.3.0",
+    "astro": "7.4.12",
+    "marked": "18.2.0"
+  },
+  "devDependencies": {
+    "wrangler": "4.162.0"
+  }
+}

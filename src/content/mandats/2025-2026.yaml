@@ -1,0 +1,6 @@
+annee: 2025-2026
+en_cours: false
+membres:
+  - { nom: Jeanne Rolland, fonction_fr: Présidente, fonction_en: President }
+  - { nom: Malo Guérin, fonction_fr: Rédacteur en chef, fonction_en: Editor-in-chief }
+  - { nom: Nour Haddad, fonction_fr: Trésorière, fonction_en: Treasurer }

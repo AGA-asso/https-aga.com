@@ -1,0 +1,67 @@
+statut: publie
+a_la_une: true
+date: 2026-11-09
+auteurs:
+  - src/content/auteurs/lea-martin.yaml
+thematiques:
+  - src/content/thematiques/economie.yaml
+  - src/content/thematiques/securite.yaml
+fr:
+  titre: "Détroits : les points d'étranglement du commerce mondial"
+  chapo: Une poignée de passages maritimes concentre une part décisive des échanges. Leur
+    vulnérabilité est devenue un sujet stratégique à part entière.
+  corps: >-
+    Le commerce mondial passe par la mer, et la mer passe par quelques couloirs étroits. Quand l'un
+    d'eux se ferme, même brièvement, ce sont des semaines de délais et des coûts de fret qui
+    s'envolent.
+
+
+    ## Une géographie qui ne se négocie pas
+
+
+    On peut diversifier ses fournisseurs, pas déplacer un détroit. Les États riverains disposent
+    ainsi d'un levier que ni leur économie ni leur armée ne leur donneraient seules.
+
+
+    > La carte reste le premier document stratégique.
+
+
+    Pour les entreprises, la question n'est plus de savoir si une route sera perturbée, mais combien
+    de temps elles peuvent tenir sans elle.
+
+
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+en:
+  titre: "Straits: the chokepoints of world trade"
+  chapo: A handful of sea passages carry a decisive share of global exchange. Their vulnerability has
+    become a strategic issue in its own right.
+  corps: >-
+    World trade travels by sea, and the sea runs through a few narrow corridors. When one of them
+    closes, even briefly, weeks of delay follow and freight costs soar.
+
+
+    ## A geography that cannot be negotiated
+
+
+    You can diversify suppliers, but you cannot move a strait. Coastal states therefore hold
+    leverage that neither their economy nor their military would give them alone.
+
+
+    > The map remains the first strategic document.
+
+
+    For companies, the question is no longer whether a route will be disrupted, but how long they
+    can cope without it.
+
+
+    *Placeholder text: it illustrates the layout and is not an analysis.*
+image:
+  fichier: /src/media/couvertures/meridiens-bleu.jpg
+  alt_fr: Globe stylisé en lignes claires sur fond bleu nuit
+  alt_en: Stylised globe in pale lines on a dark blue background
+  credit: Audencia Global Affairs
+  source: https://aga.example
+  licence: Création AGA
+sources: |-
+  - Source de démonstration n° 1
+  - Source de démonstration n° 2

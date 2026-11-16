@@ -1,0 +1,16 @@
+---
+// Formulaire Tally intégré. Tant que son adresse n'est pas saisie dans les réglages, un encadré le signale.
+import { t as traduire } from '../i18n/ui';
+import type { Lang } from '../lib/content';
+interface Props { url?: string | null; titre: string; lang: Lang }
+const { url, titre, lang } = Astro.props;
+const t = traduire(lang);
+---
+
+{
+  url ? (
+    <iframe class="formulaire" src={url} title={titre} loading="lazy" />
+  ) : (
+    <p class="formulaire-vide">{t('form.aBrancher')}</p>
+  )
+}

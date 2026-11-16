@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import Agenda from '../../components/Agenda.astro';
+import { t as traduire } from '../../i18n/ui';
+import { LANGS, getEvenements, type Lang } from '../../lib/content';
+
+export const getStaticPaths = () => LANGS.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const t = traduire(lang);
+const evenements = await getEvenements();
+---
+
+<Base lang={lang} titre={t('agenda.titre')} description={t('agenda.intro')}>
+  <div class="conteneur">
+    <header class="tete-page">
+      <h1>{t('agenda.titre')}</h1>
+      <p class="intro">{t('agenda.intro')}</p>
+    </header>
+    <Agenda evenements={evenements} lang={lang} titreAVenir="evt.aVenir" titrePasses="evt.passes" />
+  </div>
+</Base>

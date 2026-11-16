@@ -1,0 +1,60 @@
+statut: a-relire
+a_la_une: false
+date: 2026-11-16
+auteurs:
+  - src/content/auteurs/chloe-durand.yaml
+thematiques:
+  - src/content/thematiques/securite.yaml
+  - src/content/thematiques/energie-climat.yaml
+fr:
+  titre: "Arctique : des routes nouvelles, des règles anciennes"
+  chapo: Le recul des glaces ouvre des passages que le droit de la mer n'avait pas vraiment prévus.
+  corps: >-
+    Les routes polaires raccourcissent les distances entre l'Asie et l'Europe, mais leur statut
+    juridique reste disputé.
+
+
+    ## Eaux intérieures ou détroit international ?
+
+
+    De la réponse dépend le droit de passage des navires étrangers, civils comme militaires.
+
+
+    > Le droit suit la glace, avec retard.
+
+
+    La coopération régionale, longtemps exemplaire, est aujourd'hui mise à l'épreuve.
+
+
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+en:
+  titre: "The Arctic: new routes, old rules"
+  chapo: Retreating ice is opening passages that the law of the sea never quite anticipated.
+  corps: >-
+    Polar routes shorten distances between Asia and Europe, but their legal status remains
+    contested.
+
+
+    ## Internal waters or international strait?
+
+
+    The answer determines the right of passage of foreign vessels, civilian and military alike.
+
+
+    > The law follows the ice, belatedly.
+
+
+    Regional cooperation, long exemplary, is now being tested.
+
+
+    *Placeholder text: it illustrates the layout and is not an analysis.*
+image:
+  fichier: /src/media/couvertures/reliefs-ocre.jpg
+  alt_fr: Courbes de niveau sur fond ocre
+  alt_en: Contour lines on an ochre background
+  credit: Audencia Global Affairs
+  source: https://aga.example
+  licence: Création AGA
+sources: |-
+  - Source de démonstration n° 1
+  - Source de démonstration n° 2

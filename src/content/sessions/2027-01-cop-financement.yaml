@@ -1,0 +1,24 @@
+statut: publie
+debut: 2027-01-21T18:00
+fin: 2027-01-21T21:30
+lieu: Campus Atlantique, amphithéâtre B
+langue: bilingue
+niveau: intermediaire
+public: ouvert
+fr:
+  titre: Financer l'adaptation climatique
+  comite: Conférence des Parties (simulation)
+  presentation: "Qui paie, combien, et selon quels critères ? Les délégations négocient un mécanisme
+    de financement de l'adaptation. *Texte de démonstration : il illustre la mise en page et ne
+    constitue pas une analyse.*"
+  compte_rendu: ""
+en:
+  titre: Financing climate adaptation
+  comite: Conference of the Parties (simulation)
+  presentation: "Who pays, how much, and on what criteria? Delegations negotiate an adaptation finance
+    mechanism. *Placeholder text: it illustrates the layout and is not an analysis.*"
+  compte_rendu: ""
+delegations: []
+documents: []
+inscription: https://tally.so/
+date_limite: 2027-01-17

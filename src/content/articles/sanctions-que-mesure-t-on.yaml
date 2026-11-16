@@ -1,0 +1,62 @@
+statut: publie
+a_la_une: false
+date: 2026-10-27
+auteurs:
+  - src/content/auteurs/samir-benali.yaml
+thematiques:
+  - src/content/thematiques/economie.yaml
+fr:
+  titre: "Sanctions économiques : que mesure-t-on vraiment ?"
+  chapo: Juger une sanction à l'aune du changement de régime, c'est se condamner à la trouver
+    inefficace. D'autres critères existent.
+  corps: >-
+    Le débat sur l'efficacité des sanctions tourne souvent court, faute de s'entendre sur leur
+    objectif. Contraindre, affaiblir, signaler : ce ne sont pas les mêmes ambitions.
+
+
+    ## Trois objectifs, trois bilans
+
+
+    Une sanction peut échouer à faire plier un gouvernement tout en réduisant durablement ses
+    capacités, ou en rassurant des alliés sur la détermination de celui qui l'impose.
+
+
+    > Une sanction est aussi un message adressé à ceux qui ne sont pas visés.
+
+
+    Reste le coût pour celui qui sanctionne, rarement mis en regard du résultat obtenu.
+
+
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+en:
+  titre: "Economic sanctions: what are we really measuring?"
+  chapo: Judging a sanction by regime change is a sure way to find it ineffective. Other yardsticks exist.
+  corps: >-
+    The debate on whether sanctions work often stalls for want of agreement on their purpose.
+    Coercing, weakening, signalling: these are different ambitions.
+
+
+    ## Three aims, three verdicts
+
+
+    A sanction may fail to bend a government while lastingly reducing its capabilities, or
+    reassuring allies about the resolve of the state imposing it.
+
+
+    > A sanction is also a message to those who are not targeted.
+
+
+    What remains is the cost to the sanctioning state, seldom weighed against the result.
+
+
+    *Placeholder text: it illustrates the layout and is not an analysis.*
+image:
+  fichier: /src/media/couvertures/trames-nuit.jpg
+  alt_fr: Trame de carrés gris sur fond sombre
+  alt_en: Grid of grey squares on a dark background
+  credit: Audencia Global Affairs
+  source: https://aga.example
+  licence: Création AGA
+sources: |-
+  - Source de démonstration n° 1
+  - Source de démonstration n° 2

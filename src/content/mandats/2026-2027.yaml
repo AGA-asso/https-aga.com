@@ -1,0 +1,9 @@
+annee: 2026-2027
+en_cours: true
+membres:
+  - { nom: Inès Carpentier, fonction_fr: Présidente, fonction_en: President }
+  - { nom: Hugo Marchand, fonction_fr: Vice-président, fonction_en: Vice-president }
+  - { nom: Léa Martin, fonction_fr: Rédactrice en chef, fonction_en: Editor-in-chief }
+  - { nom: Samir Benali, fonction_fr: Responsable MUN, fonction_en: Head of MUN }
+  - { nom: Chloé Durand, fonction_fr: Responsable conférences, fonction_en: Head of talks }
+  - { nom: Tom Lefèvre, fonction_fr: Trésorier, fonction_en: Treasurer }

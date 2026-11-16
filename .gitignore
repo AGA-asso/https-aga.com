@@ -1,0 +1,8 @@
+node_modules
+dist
+.astro
+.env
+dist-apercu
+.wrangler
+.dev.vars*
+apercu-captures

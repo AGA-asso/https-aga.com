@@ -1,0 +1,64 @@
+statut: publie
+a_la_une: false
+date: 2026-09-18
+auteurs:
+  - src/content/auteurs/lea-martin.yaml
+thematiques:
+  - src/content/thematiques/diplomatie.yaml
+fr:
+  titre: "Réformer le Conseil de sécurité : pourquoi rien ne bouge"
+  chapo: Tout le monde s'accorde sur le diagnostic, personne sur le remède. Anatomie d'un blocage
+    institutionnel.
+  corps: >-
+    La composition du Conseil reflète un monde qui n'existe plus. Ce constat fait consensus depuis
+    des décennies, sans produire de réforme.
+
+
+    ## Le verrou de la procédure
+
+
+    Modifier la Charte suppose l'accord de ceux que la réforme affaiblirait. Chaque projet se heurte
+    en outre aux rivalités régionales entre candidats à un siège.
+
+
+    > Une institution se réforme rarement contre ceux qui la tiennent.
+
+
+    Les évolutions passent donc par la pratique : méthodes de travail, usage du veto, rôle de
+    l'Assemblée générale.
+
+
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+en:
+  titre: "Reforming the Security Council: why nothing moves"
+  chapo: Everyone agrees on the diagnosis, no one on the cure. Anatomy of an institutional deadlock.
+  corps: >-
+    The Council’s composition reflects a world that no longer exists. That view has been consensual
+    for decades without producing reform.
+
+
+    ## The procedural lock
+
+
+    Amending the Charter requires the consent of those the reform would weaken. Each proposal also
+    runs into regional rivalries among candidates for a seat.
+
+
+    > An institution is rarely reformed against those who hold it.
+
+
+    Change therefore comes through practice: working methods, use of the veto, the role of the
+    General Assembly.
+
+
+    *Placeholder text: it illustrates the layout and is not an analysis.*
+image:
+  fichier: /src/media/couvertures/meridiens-brique.jpg
+  alt_fr: Globe stylisé en lignes sur fond rouge brique
+  alt_en: Stylised globe in lines on a brick-red background
+  credit: Audencia Global Affairs
+  source: https://aga.example
+  licence: Création AGA
+sources: |-
+  - Source de démonstration n° 1
+  - Source de démonstration n° 2

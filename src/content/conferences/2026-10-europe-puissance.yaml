@@ -1,0 +1,33 @@
+statut: publie
+debut: 2026-10-22T18:30
+fin: 2026-10-22T20:00
+lieu: Campus Atlantique, amphithéâtre A
+fr:
+  titre: L'Europe peut-elle être une puissance ?
+  presentation: "Autonomie stratégique, défense commune, politique commerciale : état des lieux.
+    *Texte de démonstration : il illustre la mise en page et ne constitue pas une analyse.*"
+  compte_rendu: >-
+    Devant une soixantaine d'étudiants, l'intervenant a distingué trois sens du mot puissance : la
+    capacité de faire, de faire faire et d'empêcher de faire.
+
+
+    Selon lui, l'Union excelle dans le troisième grâce à son marché, mais peine sur le premier faute
+    d'instruments communs. La discussion avec la salle a porté sur le financement de l'effort de
+    défense.
+en:
+  titre: Can Europe be a power?
+  presentation: "Strategic autonomy, common defence, trade policy: where things stand. *Placeholder
+    text: it illustrates the layout and is not an analysis.*"
+  compte_rendu: >-
+    Before some sixty students, the speaker distinguished three meanings of power: the ability to
+    act, to make others act, and to prevent action.
+
+
+    In his view the Union excels at the third thanks to its market, but struggles with the first for
+    lack of common instruments. Discussion with the audience focused on financing the defence
+    effort.
+intervenants:
+  - nom: Pr Antoine Mercier
+    qualite_fr: Professeur de relations internationales (intervenant fictif)
+    qualite_en: Professor of international relations (fictional speaker)
+auteur_compte_rendu: Chloé Durand

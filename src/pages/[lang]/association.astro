@@ -1,0 +1,56 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { t as traduire } from '../../i18n/ui';
+import { LANGS, getMandats, getPage, image, type Lang } from '../../lib/content';
+
+export const getStaticPaths = () => LANGS.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const t = traduire(lang);
+const page = await getPage('association', lang);
+const mandats = await getMandats();
+const enCours = mandats.find((m) => m.data.en_cours) ?? mandats[0];
+const anciens = mandats.filter((m) => m !== enCours);
+const fonction = (m: any) => m[`fonction_${lang}`];
+---
+
+<Base lang={lang} titre={page.titre || t('nav.association')}>
+  <div class="conteneur">
+    <header class="tete-page"><h1>{page.titre || t('nav.association')}</h1></header>
+    <div class="prose intro-page" set:html={page.texte} />
+
+    {enCours && (
+      <section class="bloc">
+        <h2 class="titre-section">{t('asso.bureau')} {enCours.data.annee}</h2>
+        <ul class="bureau">
+          {enCours.data.membres.map((m) => {
+            const photo = image(m.photo);
+            return (
+              <li>
+                {photo
+                  ? <Image class="portrait" src={photo} alt="" width={160} height={160} />
+                  : <span class="portrait initiales" aria-hidden="true">{(m.nom ?? '').split(/\s+/).map((p) => p[0]).slice(0, 2).join('')}</span>}
+                <div>
+                  <strong>{m.linkedin ? <a href={m.linkedin} rel="noopener">{m.nom}</a> : m.nom}</strong>
+                  <span>{fonction(m)}</span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    )}
+
+    {anciens.length > 0 && (
+      <section class="bloc">
+        <h2 class="titre-section">{t('asso.anciens')}</h2>
+        {anciens.map((m) => (
+          <details class="ancien-bureau">
+            <summary>{m.data.annee}</summary>
+            <ul>{m.data.membres.map((x) => <li><strong>{x.nom}</strong>, {fonction(x)}</li>)}</ul>
+          </details>
+        ))}
+      </section>
+    )}
+  </div>
+</Base>

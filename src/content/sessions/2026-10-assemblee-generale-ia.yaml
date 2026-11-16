@@ -1,0 +1,47 @@
+statut: publie
+debut: 2026-10-08T18:00
+fin: 2026-10-08T21:00
+lieu: Campus Atlantique, salle A210
+langue: francais
+niveau: tous-niveaux
+public: audencia
+fr:
+  titre: Encadrer l'intelligence artificielle militaire
+  comite: Assemblée générale, Première Commission
+  presentation: "Faut-il interdire, encadrer ou laisser faire ? La Première Commission débat d'un
+    texte sur les systèmes d'armes autonomes. *Texte de démonstration : il illustre la mise en page
+    et ne constitue pas une analyse.*"
+  compte_rendu: >-
+    Vingt-deux délégués ont participé à cette première session de l'année. Après deux heures de
+    débat et un caucus non modéré décisif, une résolution appelant à un moratoire partiel a été
+    adoptée à une courte majorité.
+
+
+    Les échanges ont surtout porté sur la définition même d'un système autonome, preuve qu'en
+    négociation le vocabulaire est déjà un enjeu.
+en:
+  titre: Regulating military artificial intelligence
+  comite: General Assembly, First Committee
+  presentation: "Ban, regulate or let be? The First Committee debates a text on autonomous weapons
+    systems. *Placeholder text: it illustrates the layout and is not an analysis.*"
+  compte_rendu: >-
+    Twenty-two delegates took part in this first session of the year. After two hours of debate and
+    a decisive unmoderated caucus, a resolution calling for a partial moratorium was adopted by a
+    narrow majority.
+
+
+    Discussion focused on the very definition of an autonomous system, proof that in negotiation
+    vocabulary is already at stake.
+delegations: []
+documents:
+  - intitule_fr: Guide d'étude
+    intitule_en: Study guide
+    fichier: /documents/guide-etude-demonstration.pdf
+resolution: /documents/resolution-demonstration.pdf
+distinctions:
+  - intitule_fr: Meilleur délégué
+    intitule_en: Best delegate
+    nom: Délégation du Brésil
+  - intitule_fr: Mention honorable
+    intitule_en: Honourable mention
+    nom: Délégation du Japon

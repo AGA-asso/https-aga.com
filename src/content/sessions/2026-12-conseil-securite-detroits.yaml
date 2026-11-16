@@ -1,0 +1,59 @@
+statut: publie
+debut: 2026-12-03T18:00
+fin: 2026-12-03T21:00
+lieu: Campus Atlantique, salle A210
+langue: anglais
+niveau: debutant
+public: audencia
+fr:
+  titre: Crise dans un détroit stratégique
+  comite: Conseil de sécurité des Nations unies
+  presentation: >-
+    Un incident naval bloque un passage maritime essentiel. Le Conseil se réunit en urgence : chaque
+    délégation devra défendre ses intérêts tout en évitant l'escalade.
+
+
+    Session d'initiation : les règles de procédure sont expliquées en début de séance. *Texte de
+    démonstration : il illustre la mise en page et ne constitue pas une analyse.*
+  compte_rendu: ""
+en:
+  titre: Crisis in a strategic strait
+  comite: United Nations Security Council
+  presentation: >-
+    A naval incident blocks a vital sea passage. The Council meets in emergency session: each
+    delegation must defend its interests while avoiding escalation.
+
+
+    Introductory session: rules of procedure are explained at the start. *Placeholder text: it
+    illustrates the layout and is not an analysis.*
+  compte_rendu: ""
+delegations:
+  - fr: Chine
+    en: China
+  - fr: États-Unis
+    en: United States
+  - fr: France
+    en: France
+  - fr: Royaume-Uni
+    en: United Kingdom
+  - fr: Russie
+    en: Russia
+  - fr: Brésil
+    en: Brazil
+  - fr: Inde
+    en: India
+  - fr: Japon
+    en: Japan
+  - fr: Kenya
+    en: Kenya
+  - fr: Émirats arabes unis
+    en: United Arab Emirates
+documents:
+  - intitule_fr: Guide d'étude
+    intitule_en: Study guide
+    fichier: /documents/guide-etude-demonstration.pdf
+  - intitule_fr: Règles de procédure
+    intitule_en: Rules of procedure
+    fichier: /documents/regles-procedure-demonstration.pdf
+inscription: https://tally.so/
+date_limite: 2026-11-30

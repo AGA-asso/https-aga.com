@@ -1,0 +1,17 @@
+---
+import Base from '../../../layouts/Base.astro';
+import FicheEvenement from '../../../components/FicheEvenement.astro';
+import { LANGS, getEvenements, type Lang } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const evenements = await getEvenements({ type: 'conference' });
+  return LANGS.flatMap((lang) => evenements.map((evenement) => ({ params: { lang, id: evenement.id }, props: { evenement } })));
+}
+const lang = Astro.params.lang as Lang;
+const { evenement } = Astro.props;
+const d = evenement.data[lang] ?? {};
+---
+
+<Base lang={lang} titre={d.titre ?? ''} description={(d.presentation ?? '').replace(/[#*_>\[\]]/g, '').slice(0, 200)}>
+  <FicheEvenement evenement={evenement} lang={lang} />
+</Base>

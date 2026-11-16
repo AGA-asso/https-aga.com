@@ -1,0 +1,10 @@
+---
+// Pastille affichée uniquement sur le site d'aperçu, pour les contenus non publiés.
+import { APERCU, type Etat } from '../lib/content';
+import { valeur } from '../i18n/ui';
+interface Props { etat: Etat }
+const { etat } = Astro.props;
+const visible = APERCU && !etat.enLigne;
+---
+
+{visible && <span class="pastille pastille-etat">{etat.statut === 'publie' ? 'Bloqué' : valeur(etat.statut, 'fr')}</span>}

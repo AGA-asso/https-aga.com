@@ -1,0 +1,41 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../../layouts/Base.astro';
+import CarteArticle from '../../../components/CarteArticle.astro';
+import { t as traduire } from '../../../i18n/ui';
+import { LANGS, getArticles, getThematiques, lien, type Lang } from '../../../lib/content';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const articles = await getArticles();
+  return LANGS.flatMap((lang) => paginate(articles, { params: { lang }, pageSize: 9 }));
+}) satisfies GetStaticPaths;
+const lang = Astro.params.lang as Lang;
+const { page } = Astro.props;
+const t = traduire(lang);
+const themes = await getThematiques();
+---
+
+<Base lang={lang} titre={t('articles.titre')} description={t('articles.intro')}>
+  <div class="conteneur">
+    <header class="tete-page">
+      <h1>{t('articles.titre')}</h1>
+      <p class="intro">{t('articles.intro')}</p>
+    </header>
+    <ul class="filtres" aria-label={t('articles.toutes')}>
+      <li><a href={lien(lang, 'articles')} aria-current="page">{t('articles.toutes')}</a></li>
+      {themes.map((th) => <li><a href={lien(lang, `thematiques/${th.id}`)}>{th.data[lang]?.nom}</a></li>)}
+    </ul>
+    {page.data.length === 0 && <p class="vide">{t('articles.aucun')}</p>}
+    <div class="grille-articles">
+      {page.data.map((a) => <CarteArticle article={a} lang={lang} niveau="h2" />)}
+    </div>
+    {
+      (page.url.prev || page.url.next) && (
+        <nav class="pagination">
+          {page.url.prev ? <a href={page.url.prev}>← {t('articles.precedent')}</a> : <span />}
+          {page.url.next && <a href={page.url.next}>{t('articles.suivant')} →</a>}
+        </nav>
+      )
+    }
+  </div>
+</Base>

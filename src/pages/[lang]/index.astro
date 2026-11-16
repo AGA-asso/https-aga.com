@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import CarteArticle from '../../components/CarteArticle.astro';
+import CarteEvenement from '../../components/CarteEvenement.astro';
+import Etat from '../../components/Etat.astro';
+import { t as traduire } from '../../i18n/ui';
+import { LANGS, getArticles, getEvenements, lien, partager, type Lang } from '../../lib/content';
+import { jourLong } from '../../lib/dates';
+
+export const getStaticPaths = () => LANGS.map((lang) => ({ params: { lang } }));
+const lang = Astro.params.lang as Lang;
+const t = traduire(lang);
+const articles = await getArticles();
+const une = articles.find((a) => a.data.a_la_une) ?? articles[0];
+const suivants = articles.filter((a) => a !== une).slice(0, 6);
+// Les événements annulés restent dans l'agenda mais ne sont pas mis en avant sur l'accueil.
+const { aVenir } = partager((await getEvenements()).filter((e) => e.etat.statut !== 'annule'));
+---
+
+<Base lang={lang}>
+  <div class="conteneur">
+    <p class="baseline">{t('baseline')}</p>
+    {
+      une && (
+        <article class="une">
+          {une.couverture && (
+            <a href={lien(lang, `articles/${une.id}`)} tabindex="-1" aria-hidden="true">
+              <Image class="une-image" src={une.couverture} alt="" width={1200} height={750} loading="eager" />
+            </a>
+          )}
+          <div class="une-texte">
+            <p class="surtitre">{une.themes[0]?.data[lang]?.nom} <Etat etat={une.etat} /></p>
+            <h1 class="une-titre"><a href={lien(lang, `articles/${une.id}`)}>{une.data[lang]?.titre}</a></h1>
+            <p class="une-chapo">{une.data[lang]?.chapo}</p>
+            <p class="meta">
+              {une.auteurs.map((x) => x.nom).join(', ')}
+              {une.date && <> · <time datetime={une.date.toISOString()}>{jourLong(une.date, lang)}</time></>}
+            </p>
+          </div>
+        </article>
+      )
+    }
+
+    <div class="accueil-grille">
+      <section aria-labelledby="derniers">
+        <div class="titre-ligne">
+          <h2 class="titre-section" id="derniers">{t('accueil.derniers')}</h2>
+          <a class="lien-fleche" href={lien(lang, 'articles')}>{t('accueil.tous')}</a>
+        </div>
+        <div class="grille-articles deux">
+          {suivants.map((a) => <CarteArticle article={a} lang={lang} />)}
+        </div>
+      </section>
+
+      <aside aria-labelledby="rdv" data-agenda>
+        <div class="titre-ligne">
+          <h2 class="titre-section" id="rdv">{t('accueil.agenda')}</h2>
+          <a class="lien-fleche" href={lien(lang, 'agenda')}>{t('accueil.agendaTout')}</a>
+        </div>
+        <ul class="evenements compact" data-evenements="a-venir" hidden={aVenir.length === 0}>
+          {aVenir.slice(0, 4).map((e) => <CarteEvenement evenement={e} lang={lang} />)}
+        </ul>
+        <p class="vide" data-vide hidden={aVenir.length > 0}>{t('evt.aucunAVenir')}</p>
+      </aside>
+    </div>
+  </div>
+</Base>
